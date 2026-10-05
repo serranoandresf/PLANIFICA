@@ -1,0 +1,2233 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>PLANIFICA</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" type="image/png" href="icon-192.png" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <style>
+      /* ===== ESTILOS: tokens claro/oscuro ===== */
+      :root {
+        --bg: #f5f5f7;
+        --card: #fff;
+        --tx: #1d1d1f;
+        --mu: #6e6e73;
+        --bd: #e5e5ea;
+        --btn: #000;
+        --btx: #fff;
+        --ok: #1e7a37;
+        --wn: #b25e00;
+        --er: #d93025;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #000;
+          --card: #1c1c1e;
+          --tx: #f5f5f7;
+          --mu: #98989d;
+          --bd: #2c2c2e;
+          --btn: #fff;
+          --btx: #000;
+          --ok: #32d74b;
+          --wn: #ff9f0a;
+          --er: #ff6961;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #000;
+        --card: #1c1c1e;
+        --tx: #f5f5f7;
+        --mu: #98989d;
+        --bd: #2c2c2e;
+        --btn: #fff;
+        --btx: #000;
+        --ok: #32d74b;
+        --wn: #ff9f0a;
+        --er: #ff6961;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-padding-top: env(safe-area-inset-top, 0px);
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--tx);
+        font:
+          16px -apple-system,
+          "SF Pro Text",
+          system-ui,
+          sans-serif;
+      }
+      main {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 64px 16px 96px;
+      }
+      .top {
+        position: fixed;
+        top: env(safe-area-inset-top, 0px);
+        left: 0;
+        right: 0;
+        z-index: 5;
+        backdrop-filter: blur(18px);
+        background: color-mix(in srgb, var(--bg) 75%, transparent);
+        border-bottom: 1px solid var(--bd);
+      }
+      .top div,
+      .tabs div {
+        max-width: 720px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+      }
+      .tabs {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 5;
+        backdrop-filter: blur(18px);
+        background: color-mix(in srgb, var(--bg) 80%, transparent);
+        border-top: 1px solid var(--bd);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      .tabs div {
+        padding: 6px 16px;
+        justify-content: space-around;
+      }
+      .tabs button {
+        background: none;
+        border: 0;
+        color: var(--mu);
+        font-weight: 600;
+        font-size: 12px;
+        font-family: inherit;
+        padding: 10px 16px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        cursor: pointer;
+      }
+      .tabs button.on {
+        color: var(--tx);
+      }
+      h1 {
+        font-size: 22px;
+        margin: 0;
+        letter-spacing: -0.02em;
+      }
+      h2 {
+        font-size: 30px;
+        letter-spacing: -0.03em;
+        margin: 8px 0 4px;
+      }
+      .lb {
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--mu);
+        font-weight: 600;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--bd);
+        border-radius: 24px;
+        padding: 18px;
+        margin: 12px 0;
+        box-shadow: 0 2px 14px rgba(0, 0, 0, 0.05);
+      }
+      .btn {
+        background: var(--btn);
+        color: var(--btx);
+        border: 0;
+        border-radius: 999px;
+        padding: 10px 18px;
+        font-weight: 600;
+        font-size: 14px;
+        font-family: inherit;
+        cursor: pointer;
+        transition:
+          transform 0.1s,
+          opacity 0.2s;
+      }
+      .btn:active {
+        transform: scale(0.96);
+      }
+      .btn.s {
+        background: transparent;
+        color: var(--tx);
+        border: 1px solid var(--bd);
+      }
+      .btn.sm {
+        padding: 9px 14px;
+        font-size: 13px;
+        min-height: 38px;
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .sp {
+        justify-content: space-between;
+      }
+      .bl {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+      }
+      .tm {
+        width: 54px;
+        font-variant-numeric: tabular-nums;
+        color: var(--mu);
+        font-size: 13px;
+        padding-top: 2px;
+      }
+      .bar {
+        height: 6px;
+        border-radius: 9px;
+        background: var(--bd);
+        overflow: hidden;
+        margin: 6px 0;
+      }
+      .bar i {
+        display: block;
+        height: 100%;
+        background: var(--ok);
+        width: 0;
+      }
+      .al {
+        border-radius: 16px;
+        padding: 12px 14px;
+        margin: 10px 0;
+        font-size: 14px;
+        border: 1px solid var(--wn);
+        color: var(--wn);
+      }
+      .al.e {
+        border-color: var(--er);
+        color: var(--er);
+      }
+      .al.g {
+        border-color: var(--ok);
+        color: var(--ok);
+      }
+      .mu {
+        color: var(--mu);
+        font-size: 13px;
+      }
+      .ok {
+        color: var(--ok);
+      }
+      .wn {
+        color: var(--wn);
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        background: var(--bg);
+        color: var(--tx);
+        border: 1px solid var(--bd);
+        border-radius: 12px;
+        padding: 10px;
+        font: inherit;
+        margin: 4px 0 10px;
+      }
+      .g2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 10px;
+      }
+      .ov {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+      }
+      .ov[hidden] {
+        display: none;
+      }
+      .sh {
+        background: var(--card);
+        width: 100%;
+        max-width: 720px;
+        max-height: 88vh;
+        overflow: auto;
+        border-radius: 24px 24px 0 0;
+        padding: 20px 18px calc(24px + env(safe-area-inset-bottom, 0px));
+      }
+      #toast {
+        position: fixed;
+        left: 50%;
+        bottom: 90px;
+        transform: translateX(-50%);
+        background: var(--btn);
+        color: var(--btx);
+        padding: 10px 18px;
+        border-radius: 999px;
+        font-size: 14px;
+        z-index: 20;
+        opacity: 0;
+        transition: opacity 0.3s;
+        pointer-events: none;
+        max-width: 90%;
+      }
+      #toast.on {
+        opacity: 1;
+      }
+      pre {
+        white-space: pre-wrap;
+        font:
+          13px ui-monospace,
+          monospace;
+        margin: 0;
+      }
+      /* Fase 5: respeta "reducir movimiento" del sistema */
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation: none !important;
+          transition: none !important;
+          scroll-behavior: auto !important;
+        }
+      }
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible,
+      textarea:focus-visible {
+        outline: 2px solid var(--wn);
+        outline-offset: 2px;
+      }
+      .big {
+        font-size: 54px;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        font-variant-numeric: tabular-nums;
+      }
+    .mg{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.mc{aspect-ratio:1;border-radius:8px;background:var(--bd);font-size:11px;display:flex;align-items:center;justify-content:center}
+.tabs button{padding:10px 5px;font-size:10px;letter-spacing:.03em}
+</style>
+  </head>
+  <body>
+    <div class="top">
+      <div>
+        <h1>PLANIFICA</h1>
+        <span class="lb" id="dt"></span>
+      </div>
+    </div>
+    <main id="v"></main>
+    <nav class="tabs" aria-label="Navegación">
+      <div>
+        <button data-a="tab" data-i="hoy">Hoy</button
+        ><button data-a="tab" data-i="sem">Semana</button
+        ><button data-a="tab" data-i="met">Metas</button
+        ><button data-a="tab" data-i="hab">Hábitos</button
+        ><button data-a="tab" data-i="act">Actividades</button
+        ><button data-a="tab" data-i="aju">Ajustes</button>
+      </div>
+    </nav>
+    <div class="ov" id="ov" hidden role="dialog" aria-modal="true">
+      <div class="sh" id="sh"></div>
+    </div>
+    <div id="toast" role="status"></div>
+    <input type="file" id="imp" accept="application/json" hidden />
+
+    <script>
+      /* ===== CONFIGURACIÓN ===== */
+      const KEY = "planifica_v2";
+      const CATS = [
+        "ejercicio",
+        "idiomas",
+        "lectura",
+        "trabajo",
+        "proyectos",
+        "comida",
+        "desplazamiento",
+        "recuperación",
+        "hogar",
+      ];
+      const CV0 = 0.15; // variabilidad previa (sin datos): 15%
+      const K_PESO = 5; // w = n/(n+5)
+      const ALFA = 0.3; // media móvil exponencial
+      const FAT_SERIE = 0.04; // el ritmo decae 4% por serie
+      const $ = (s) => document.querySelector(s);
+      const pad = (n) => String(n).padStart(2, "0");
+      const hm = (m) => {
+        m = Math.round(m);
+        return pad(Math.floor(m / 60) % 24) + ":" + pad(m % 60);
+      };
+      const tm = (s) => {
+        const [a, b] = s.split(":");
+        return +a * 60 + +b;
+      };
+      const dk = (d = new Date()) =>
+        d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+      // Dormir: objetivo (sleep) y límite absoluto (hard, puede ser pasada la medianoche → minutos > 1440)
+      const SL = () => {
+        let s = tm(S.cfg.sleep);
+        if (s <= tm(S.cfg.wake)) s += 1440;
+        return s;
+      };
+      const HD = () => {
+        let h = tm(S.cfg.hard || "00:30");
+        if (h <= tm(S.cfg.wake)) h += 1440;
+        return Math.max(h, SL());
+      };
+      const limOf = (k) => (S.ext && S.ext[k] ? HD() : SL()); // el límite absoluto solo se usa si lo confirmas ese día
+      const rp = () => {
+        genPlan(dk());
+      }; // reajusta hoy conservando lo ya hecho
+      let YES = null;
+      const ask = (m, fn) => {
+        YES = fn;
+        sheet(
+          `<h2>${esc(m)}</h2><div class="row"><button class="btn" data-a="yes">Sí</button><button class="btn s" data-a="close">No</button></div>`,
+        );
+      };
+      function importTxt(t) {
+        try {
+          const nuevo = norm(JSON.parse(t));
+          const dias = new Set(nuevo.logs.map((l) => l.date)).size;
+          // Nada se reemplaza hasta que confirmes; antes se muestra qué contiene el archivo
+          ask(
+            `Importar respaldo: ${nuevo.logs.length} registros en ${dias} días, ${nuevo.tpl.length} actividades, ${nuevo.goals.length} metas. Reemplaza tus datos actuales (queda copia de seguridad en el navegador). ¿Continuar?`,
+            () => {
+              try {
+                localStorage.setItem(KEY + "_preimport", JSON.stringify(S));
+              } catch (_) {}
+              S = nuevo;
+              save();
+              applyTheme();
+              render();
+              toast("Respaldo importado");
+            },
+          );
+        } catch (x) {
+          toast("Archivo inválido: no se importó nada");
+        }
+      }
+      const esc = (s) =>
+        String(s).replace(
+          /[&<>"]/g,
+          (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+        );
+
+      /* ===== DATOS: plantillas de ejemplo (tuyas) ===== */
+      const T = (id, name, cat, base, prep, trans, energy, win, x = {}) => ({
+        id,
+        name,
+        cat,
+        base,
+        prep,
+        trans,
+        energy,
+        type: "normal",
+        prio: 2,
+        freq: "diaria",
+        win,
+        ...x,
+      });
+      const S1 = (n, sets, reps, secRep, rest) => ({
+          n,
+          k: "series",
+          sets,
+          reps,
+          secRep,
+          rest,
+        }),
+        M = (n, min) => ({ n, k: "tiempo", min });
+      function seed() {
+        return {
+          cfg: {
+            wake: "06:30",
+            sleep: "23:00",
+            hard: "00:30",
+            theme: null,
+            lastBackup: 0,
+          },
+          tpl: [
+            T("ej", "Ejercicio", "ejercicio", 0, 10, 10, 3, "06:45", {
+              prio: 1,
+              winD: { 6: "15:30" },
+              type: "rutina",
+              items: [
+                M("Calentamiento", 8),
+                S1("Flexiones (100)", 5, 20, 2.5, 60),
+                S1("Sentadillas", 4, 20, 2.5, 60),
+                S1("Plancha", 3, 1, 45, 45),
+                M("Cardio", 20),
+                M("Estiramiento", 7),
+              ],
+            }),
+            T("sn", "Snack previo", "comida", 5, 0, 0, 1, "06:30", { prio: 1 }),
+            T("co", "Comida", "comida", 25, 0, 5, 1, "08:30,12:45,20:00", {
+              prio: 1,
+            }),
+            T("fo", "Foco profundo", "trabajo", 90, 5, 5, 3, "09:00,11:30", {
+              prio: 1,
+              rest: 10,
+              days: [1, 2, 3, 4, 5],
+            }),
+            T("fos", "Trabajo sábado (4 h antes del mediodía)", "trabajo", 90, 5, 5, 3, "06:40,09:25", {
+              prio: 1,
+              rest: 10,
+              days: [6],
+            }),
+            T(
+              "op",
+              "Trabajo operativo",
+              "trabajo",
+              105,
+              0,
+              5,
+              2,
+              "13:45,16:00",
+              { prio: 1, rest: 10, days: [1, 2, 3, 4, 5] },
+            ),
+            T("sw", "SW corto", "recuperación", 15, 2, 0, 1, "17:30,21:50", {
+              prio: 3,
+            }),
+            T("ing", "Inglés", "idiomas", 0, 5, 5, 2, "18:00", {
+              type: "rutina",
+              items: [
+                M("Vocabulario y repaso", 10),
+                M("Escucha activa", 20),
+                M("Hablar o escribir", 20),
+                M("Corregir errores", 10),
+              ],
+            }),
+            T("pr", "Proyectos propios", "proyectos", 0, 5, 5, 3, "19:15", {
+              prio: 3,
+              type: "rutina",
+              days: [6, 0],
+              items: [
+                M("Definir siguiente paso", 5),
+                M("Trabajo enfocado", 35),
+                M("Anotar avance", 5),
+              ],
+            }),
+            T("lec", "Lectura", "lectura", 0, 2, 0, 1, "20:40", {
+              type: "rutina",
+              items: [M("Lectura continua", 50), M("Notas y subrayado", 10)],
+            }),
+            T(
+              "des",
+              "Desplazamiento (bajo demanda)",
+              "desplazamiento",
+              30,
+              3,
+              0,
+              1,
+              "",
+              { freq: "demanda" },
+            ),
+          ],
+          plan: {},
+          logs: [],
+          cal: {},
+          timer: null,
+          extra: {},
+          rm: {},
+          add: {},
+          ext: {},
+          pend: [],
+          en: [], goals: [], hd: {}, rev: [], v: 5,
+        };
+      } // en = chequeos de energía [{ts,v(1-5)}]
+
+      /* ===== ESTADO + persistencia con validación ===== */
+      let S,
+        TAB = "hoy";
+      // Normaliza y migra a esquema v3 (copia previa en _pre3); lanza error si el archivo no sirve
+      function norm(o, raw) {
+        if (!o || !Array.isArray(o.tpl) || !Array.isArray(o.logs) || !o.cfg)
+          throw 0;
+        if (
+          o.tpl.some(
+            (x) => !x || typeof x.id !== "string" || typeof x.name !== "string",
+          )
+        )
+          throw 0;
+        if (o.v > 5) throw 0; // versión más nueva que esta app: no la degradamos en silencio
+        if (raw && (o.v || 0) < 5)
+          try {
+            localStorage.setItem(KEY + "_pre5", raw); // copia previa a migrar (una sola vez)
+          } catch (_) {}
+        o.cfg = {
+          wake: "06:30",
+          sleep: "23:00",
+          hard: "00:30",
+          theme: null,
+          lastBackup: 0,
+          ...o.cfg,
+        };
+        ["plan", "cal", "extra", "rm", "add", "ext"].forEach((k) => {
+          if (!o[k] || typeof o[k] !== "object" || Array.isArray(o[k]))
+            o[k] = {};
+        });
+        if (!Array.isArray(o.pend)) o.pend = [];
+        o.en = (Array.isArray(o.en) ? o.en : [])
+          .filter((e) => e && isFinite(+e.ts) && +e.v >= 1 && +e.v <= 5)
+          .slice(-400); // energía: últimos 400 chequeos
+        o.logs = o.logs.filter(
+          (l) =>
+            l &&
+            typeof l.date === "string" &&
+            typeof l.tid === "string" &&
+            isFinite(+l.real),
+        ); // descarta registros dañados
+        const dias = Object.keys(o.plan).sort(),
+          viejo = dk(new Date(Date.now() - 14 * 864e5));
+        dias.forEach((k) => {
+          if (k < viejo) delete o.plan[k];
+        }); // los planes viejos no se necesitan: el historial está en logs
+        o.tpl.forEach((t) => {
+          delete t.scale;
+          t.id = t.id.replace(/[^\w-]/g, "_");
+          if (!CATS.includes(t.cat)) t.cat = "hogar";
+          if (!["diaria", "lv", "fs", "demanda"].includes(t.freq))
+            t.freq = "diaria";
+          t.win = String(t.win || "")
+            .split(",")
+            .map((x) => x.trim())
+            .filter((x) => /^([01]?\d|2[0-3]):[0-5]\d$/.test(x))
+            .join(",");
+          t.cat = String(t.cat || "hogar");
+          t.items = Array.isArray(t.items) ? t.items : [];
+          t.win = String(t.win || "");
+          t.rest = +t.rest || 0;
+          t.base = +t.base || 1;
+          t.prep = +t.prep || 0;
+          t.trans = +t.trans || 0;
+          t.energy = +t.energy || 2;
+          t.prio = +t.prio || 2;
+          t.freq = t.freq || "diaria"; t.days = Array.isArray(t.days) ? [...new Set(t.days.map(Number).filter((d) => d >= 0 && d <= 6))] : [];
+          t.type = t.type || "normal";
+          // winD (Fase 5): {día:'HH:MM,HH:MM'} ventana distinta según el día de la semana
+          if (t.winD && typeof t.winD === "object" && !Array.isArray(t.winD)) {
+            const w = {};
+            Object.keys(t.winD).forEach((k) => {
+              const v = String(t.winD[k]).split(",").map((x) => x.trim()).filter((x) => /^([01]?\d|2[0-3]):[0-5]\d$/.test(x)).join(",");
+              if (+k >= 0 && +k <= 6 && v) w[k] = v;
+            });
+            if (Object.keys(w).length) t.winD = w; else delete t.winD;
+          } else delete t.winD;
+        });
+        if (o.pg !== 2) {
+          if (!o.logs.some((l) => l.date === dk())) o.plan = {};
+          o.pg = 2;
+        }
+        delete o.pv;
+        if (!Array.isArray(o.goals)) o.goals = []; if (!o.hd || typeof o.hd !== "object" || Array.isArray(o.hd)) o.hd = {}; if (!Array.isArray(o.rev)) o.rev = []; o.goals = o.goals.filter((g) => g && typeof g.id === "string" && g.target > 0 && g.u > 0 && /^\d{4}-\d\d-\d\d$/.test(g.date || "")); // v4: metas
+          // v5 (Fase 5): trabajo L-V + sábado 4 h; proyectos propios en fin de semana.
+          // Solo toca plantillas que siguen sin editar (diaria y sin días fijos) y nunca borra datos.
+          if ((o.v || 0) < 5) {
+            const f = (id) => o.tpl.find((t) => t.id === id);
+            let cambio = false;
+            ["fo", "op"].forEach((id) => {
+              const t = f(id);
+              if (t && t.freq === "diaria" && !t.days.length) {
+                t.days = [1, 2, 3, 4, 5];
+                cambio = true;
+              }
+            });
+            const ej = f("ej");
+            if (ej && ej.win === "06:45" && !ej.winD) {
+              ej.winD = { 6: "15:30" }; // sábado: la mañana es para el trabajo
+              cambio = true;
+            }
+            const pr = f("pr");
+            if (pr && pr.freq === "diaria" && !pr.days.length) {
+              pr.days = [6, 0];
+              cambio = true;
+            }
+            if (f("fo") && f("fo").days.join() === "1,2,3,4,5" && !f("fos"))
+              o.tpl.push(
+                T("fos", "Trabajo sábado (4 h antes del mediodía)", "trabajo", 90, 5, 5, 3, "06:40,09:25", { prio: 1, rest: 10, days: [6] }),
+              );
+            if (cambio && raw) o.note5 = 1; // avisa una vez al cargar
+          }
+          o.v = 5;
+        return o;
+      }
+      function load() {
+        try {
+          const r = localStorage.getItem(KEY);
+          if (!r) {
+            S = seed();
+            return;
+          }
+          const pj = JSON.parse(r);
+          if (pj && typeof pj === "object" && !Object.keys(pj).length) {
+            S = seed(); // objeto vacío: no es corrupción, se arranca limpio
+            return;
+          }
+          S = norm(pj, r);
+          if (S.note5) {
+            delete S.note5;
+            setTimeout(() => toast("Rutina ajustada: trabajo L-V, sábado 4 h, proyectos en fin de semana (editable en Actividades)"), 500);
+          }
+        } catch (e) {
+          try {
+            localStorage.setItem(
+              KEY + "_corrupto",
+              localStorage.getItem(KEY) || "",
+            );
+          } catch (_) {}
+          S = seed();
+          setTimeout(
+            () =>
+              toast(
+                "Datos corruptos: se cargó el ejemplo (copia en _corrupto).",
+              ),
+            400,
+          );
+        }
+      }
+      function save() {
+        try {
+          localStorage.setItem(KEY, JSON.stringify(S));
+        } catch (e) {
+          toast("No se pudo guardar (almacenamiento lleno o bloqueado)");
+        }
+      }
+      function toast(m) {
+        const t = $("#toast");
+        t.textContent = m;
+        t.classList.add("on");
+        clearTimeout(toast.h);
+        toast.h = setTimeout(() => t.classList.remove("on"), 3200);
+      }
+
+      /* ===== MOTOR: estimación determinista y explicable ===== */
+      // Línea base: series = suma de series con fatiga progresiva + descansos
+      // Componente: series (fatiga progresiva + descansos) o tiempo fijo, en minutos
+      function itemMin(i, sc = 1) {
+        if (i.k === "series") {
+          let s = 0;
+          for (let k = 0; k < i.sets; k++)
+            s += i.reps * i.secRep * (1 + FAT_SERIE * k);
+          return (s + i.rest * (i.sets - 1)) / 60;
+        }
+        return +i.min * sc;
+      }
+      // Una rutina dura lo que suman sus componentes; una actividad simple usa su duración base
+      function baseOf(t) {
+        return t.type === "rutina" && t.items && t.items.length
+          ? t.items.reduce((s, i) => s + itemMin(i, t.scale || 1), 0)
+          : +t.base * (t.scale || 1);
+      }
+      // Texto editable: "Flexiones; 5x20; 2.5; 60" (series; seg/rep; descanso) o "Cardio; 20 min"
+      function parseItems(s) {
+        return s
+          .split("\n")
+          .map((l) => l.trim())
+          .filter(Boolean)
+          .map((l) => {
+            const p = l.split(";").map((x) => x.trim()),
+              m = (p[1] || "").match(/^(\d+)\s*x\s*(\d+)$/i);
+            return m
+              ? {
+                  n: p[0],
+                  k: "series",
+                  sets: +m[1],
+                  reps: +m[2],
+                  secRep: +p[2] || 2.5,
+                  rest: +p[3] || 60,
+                }
+              : { n: p[0], k: "tiempo", min: parseFloat(p[1]) || 5 };
+          });
+      }
+      const itemsText = (a) =>
+        a
+          .map((i) =>
+            i.k === "series"
+              ? `${i.n}; ${i.sets}x${i.reps}; ${i.secRep}; ${i.rest}`
+              : `${i.n}; ${i.min} min`,
+          )
+          .join("\n");
+      function calOf(t) {
+        return (
+          S.cal[t.id] || S.cal["c:" + t.cat] || { n: 0, ratio: 1, cv: CV0 }
+        );
+      }
+      const DC = {};
+      function estimate(t, hour) {
+        const b = baseOf(t),
+          p = +t.prep,
+          c = calOf(t);
+        const w = c.n / (c.n + K_PESO); // peso del historial
+        const f = w * c.ratio + (1 - w); // factor personal
+        const cv = Math.min(0.6, Math.max(0.05, w * c.cv + (1 - w) * CV0));
+        // contexto: hora tarde, novedad y fatiga del día
+        const ck = dk() + ":" + S.logs.length;
+        if (DC.k !== ck) {
+          DC.k = ck;
+          DC.v = S.logs
+            .filter((l) => l.date === dk() && l.status === "hecha" && !l.nocal)
+            .reduce((s, l) => s + l.real, 0);
+        }
+        const done = DC.v; // caché: evita recorrer todo el historial en cada estimación
+        const cx = [
+          ["hora tarde (≥20h)", hour >= 20 ? 1.05 : 1],
+          ["tarde post-comida (14-16h)", hour >= 14 && hour < 16 ? 1.03 : 1],
+          ["actividad nueva (<3 registros)", c.n < 3 ? 1.05 : 1],
+          ["fatiga (>5 h hechas hoy)", done > 300 ? 1.05 : 1],
+        ];
+        const ctx = cx.reduce((a, x) => a * x[1], 1);
+        const exp = (b + p) * f * ctx;
+        const lo = exp * (1 - 1.6 * cv),
+          hi = exp * (1 + 1.6 * cv); // 80%: el CV es desviación media absoluta; ×1.25 la aproxima a σ → 1.28×1.25≈1.6
+        const buf = Math.min(0.4, 0.1 + 0.5 * cv); // buffer adaptativo
+        const block = exp * (1 + buf) + +t.trans + (+t.rest || 0);
+        return {
+          sc: t.scale || 1,
+          it:
+            t.type === "rutina"
+              ? t.items
+                  .map(
+                    (i) =>
+                      i.n + " " + itemMin(i, t.scale || 1).toFixed(1) + " min",
+                  )
+                  .join(" + ")
+              : "",
+          b,
+          p,
+          n: c.n,
+          ratio: c.ratio,
+          w,
+          f,
+          cx,
+          ctx,
+          cv,
+          exp: Math.round(exp),
+          lo: Math.max(1, Math.round(lo)),
+          hi: Math.round(hi),
+          buf,
+          bufMin: Math.round(exp * buf),
+          trans: +t.trans,
+          rest: +t.rest || 0,
+          block: Math.round(block),
+          conf: Math.round(w * 100),
+        };
+      }
+      function why(e) {
+        return `Estimación: ${e.exp} min (${e.lo}-${e.hi} min, 80% de confianza aprox.)
+Confianza del historial: ${e.conf}% (n=${e.n} registros)
+
+Desglose:
+- Línea base: ${e.b.toFixed(1)} min${e.it ? " (" + e.it + ")" : ""}
+- Preparación: ${e.p} min${e.sc < 1 ? ` · recorte aplicado: ${Math.round(e.sc * 100)}% de la duración` : ""}
+- Peso del historial w = n/(n+5) = ${e.w.toFixed(2)}
+- Ratio histórico real/base: ${e.ratio.toFixed(2)}x → factor personal ${e.f.toFixed(2)}x
+- Contexto: ${
+          e.cx
+            .filter((x) => x[1] !== 1)
+            .map((x) => x[0] + " ×" + x[1])
+            .join(", ") || "sin ajustes"
+        } (×${e.ctx.toFixed(2)})
+- Esperado = (base+prep) × personal × contexto = ${e.exp} min
+- Variabilidad (CV): ${(e.cv * 100).toFixed(0)}% → rango = esperado × (1 ± 1.6×CV; CV = desviación media absoluta, ×1.25 ≈ σ)
+- Buffer adaptativo = 10% + 0.5×CV (tope 40%) = ${(e.buf * 100).toFixed(0)}% → +${e.bufMin} min
+- Transición: ${e.trans} min · Descanso posterior: ${e.rest} min
+Bloque reservado: ${e.block} min
+
+Es calibración estadística personal, no predicción. Si hay pocos datos, domina la línea base.`;
+      }
+      // Calibración: media móvil exponencial del ratio real/(base+prep) y de su desviación relativa
+      function calUpd(key, obs) {
+        const c = S.cal[key] || { n: 0, ratio: 1, cv: CV0 };
+        if (c.n === 0) {
+          c.ratio = obs;
+          c.cv = 0.2;
+        } else {
+          const d = Math.abs(obs - c.ratio) / c.ratio;
+          c.ratio = ALFA * obs + (1 - ALFA) * c.ratio;
+          c.cv = ALFA * d + (1 - ALFA) * c.cv;
+        }
+        c.cv = Math.min(0.6, Math.max(0.05, c.cv));
+        c.n++;
+        S.cal[key] = c;
+      }
+      function addLog(l) {
+        S.logs.push(l);
+        if (l.status === "hecha") {
+          const t = S.tpl.find((x) => x.id === l.tid);
+          if (!t) return;
+          const o =
+            l.real / Math.max(1, (l.bp || baseOf(t) + +t.prep) * (l.cx || 1));
+          calUpd(t.id, o);
+          calUpd("c:" + t.cat, o);
+        }
+      }
+      // Recalcula toda la calibración desde los registros (usa la base real del bloque y quita el contexto)
+      function rebuildCal() {
+        S.cal = {};
+        S.logs
+          .filter((l) => l.status === "hecha" && !l.nocal)
+          .sort(
+            (a, b) =>
+              a.date.localeCompare(b.date) ||
+              (a.startTs || 0) - (b.startTs || 0),
+          )
+          .forEach((l) => {
+            const t = S.tpl.find((x) => x.id === l.tid);
+            if (!t) return;
+            const o =
+              l.real / Math.max(1, (l.bp || baseOf(t) + +t.prep) * (l.cx || 1));
+            calUpd(t.id, o);
+            calUpd("c:" + t.cat, o);
+          });
+      }
+
+      /* ===== PLAN DEL DÍA: ordena por ventana, empuja los solapes ===== */
+      function applies(t, d) {
+        const w = d.getDay();
+        return (
+          (t.days && t.days.length ? t.days.includes(w) : false) ||
+          (!(t.days && t.days.length) && t.freq === "diaria") ||
+          (!(t.days && t.days.length) && t.freq === "lv" && w > 0 && w < 6) ||
+          (!(t.days && t.days.length) && t.freq === "fs" && (w === 0 || w === 6))
+        );
+      }
+      function genPlan(key) {
+        // Plan autoajustable: recorta lo prescindible (hasta 50%) para que todo quepa; si lo quitas, el tiempo vuelve
+        const hoy = key === dk(),
+          d = hoy ? new Date() : new Date(key + "T12:00:00"),
+          nowM = hoy
+            ? Math.ceil((d.getHours() * 60 + d.getMinutes()) / 5) * 5
+            : 0,
+          rm = (S.rm || {})[key] || [];
+        const old = (S.plan[key] || []).filter(
+            (i) =>
+              (logOf(i.iid) || (S.timer && S.timer.iid === i.iid)) && !i.fuera,
+          ),
+          ids = old.map((i) => i.iid); // lo ya hecho no se mueve
+        const C0 = Math.max(
+          tm(S.cfg.wake),
+          nowM,
+          ...old.map((i) => {
+            const l = logOf(i.iid);
+            if (l && l.endTs) {
+              const e = new Date(l.endTs);
+              return e.getHours() * 60 + e.getMinutes();
+            }
+            return S.timer && S.timer.iid === i.iid ? i.start + i.est.block : 0;
+          }),
+        ); // el plan arranca ahora, no en el pasado
+        const cp = {};
+        S.tpl
+          .concat((S.extra || {})[key] || [])
+          .filter((t) => applies(t, d))
+          .forEach((t) => (cp[t.id] = { ...t, scale: 1 }));
+        const list = [];
+        Object.values(cp).forEach((t) => {
+          const ws = ((t.winD && t.winD[d.getDay()]) || t.win || "") // winD: ventana propia por día (0=Dom)
+            .split(",")
+            .map((x) => x.trim())
+            .filter(Boolean);
+          (ws.length ? ws : [""]).forEach((w, k) => {
+            if (
+              !rm.includes(t.id + "#" + k) &&
+              !ids.includes(t.id + "@" + key + "#" + k) &&
+              !logOf(t.id + "@" + key + "#" + k)
+            )
+              list.push({ t, w, k });
+          });
+        });
+        // actividades "bajo demanda" añadidas hoy: persisten en S.add y se reajustan con el día
+        ((S.add || {})[key] || []).forEach((a) => {
+          const b = S.tpl.find((t) => t.id === a.tid);
+          if (!b) return;
+          const t = cp[a.tid] || (cp[a.tid] = { ...b, scale: 1 });
+          if (
+            !rm.includes(a.tid + "#" + a.k) &&
+            !ids.includes(a.tid + "@" + key + "#" + a.k)
+          )
+            list.push({ t, w: "", k: a.k, ad: 1 });
+        });
+        list.sort(
+          (a, b) =>
+            tm(a.w || (a.t.cat === "compromiso" || a.ad ? hm(C0) : "23:00")) -
+            tm(b.w || (b.t.cat === "compromiso" || b.ad ? hm(C0) : "23:00")),
+        );
+        const lim = limOf(key),
+          fuera = [],
+          W = (x) => tm(x.w || "23:00"),
+          F = (y) => y.t.cat === "compromiso";
+        const load = () =>
+          list.reduce(
+            (s, x) => s + estimate(x.t, Math.floor(C0 / 60)).block,
+            0,
+          );
+        let g = 90;
+        while (load() > lim - C0 - 20 && g--) {
+          const c = Object.values(cp)
+            .filter((t) => t.prio > 1 && t.scale > 0.51)
+            .sort((a, b) => b.prio - a.prio)[0];
+          if (!c) break;
+          c.scale = Math.round((c.scale - 0.1) * 10) / 10;
+        }
+        // Empaquetado: sin huecos; solo los compromisos con hora esperan; los huecos se rellenan con actividades que caben
+        const run = (L) => {
+          let cur = C0,
+            out = [],
+            q = [...L],
+            lm = null; // lm = última comida colocada
+          while (q.length) {
+            // el próximo compromiso con hora fija (las comidas solo ordenan, no bloquean): lo anterior debe caber antes (nunca se pisa); SW no rellena huecos
+            const fx = q
+              .filter((y) => F(y) && y.w && tm(y.w) >= cur)
+              .sort((a, b) => tm(a.w) - tm(b.w))[0];
+            let n = 0;
+            if (fx) {
+              const gap = tm(fx.w) - cur;
+              n = q.findIndex(
+                (y) =>
+                  !F(y) &&
+                  y.t.cat !== "recuperación" &&
+                  (y.t.cat !== "comida" || tm(y.w || "23:00") <= cur + 90) &&
+                  estimate(y.t, Math.floor(cur / 60)).block <= gap,
+              );
+              if (n < 0) n = q.indexOf(fx);
+            }
+            if (q[n].t.cat === "recuperación" && q[n + 1] && (q[n + 1].t.energy >= 3 || q[n + 1].t.cat === "ejercicio")) n++; // SW nunca antes de foco ni ejercicio
+            const { t, w, k } = q.splice(n, 1)[0];
+            let st = F({ t }) && w ? Math.max(tm(w), cur) : cur;
+            if (t.cat === "ejercicio" && lm) st = Math.max(st, lm.e + lm.d); // digestión: el hueco queda libre
+            const e = estimate(t, Math.floor(st / 60));
+            out.push({
+              iid: t.id + "@" + key + "#" + k,
+              tid: t.id,
+              start: st,
+              est: e,
+              w,
+            });
+            cur = st + e.block;
+            if (t.cat === "comida") lm = { e: cur, d: t.base <= 10 ? 30 : 60 };
+          }
+          return { out, cur };
+        };
+        let r = run(list);
+        while (r.cur > lim) {
+          let j = -1;
+          list.forEach((x, n) => {
+            if (
+              x.t.prio > 1 &&
+              (j < 0 ||
+                x.t.prio > list[j].t.prio ||
+                (x.t.prio === list[j].t.prio && W(x) >= W(list[j])))
+            )
+              j = n;
+          });
+          if (j < 0) break;
+          const x = list.splice(j, 1)[0];
+          fuera.push({
+            iid: x.t.id + "@" + key + "#" + x.k,
+            tid: x.t.id,
+            start: W(x),
+            est: estimate(x.t, Math.floor(W(x) / 60)),
+            fuera: 1,
+            w: x.w,
+          });
+          r = run(list);
+        }
+        // si aún no cabe, lo de prioridad 1 también sale de hoy (nunca se agenda pasado el límite): primero trabajo/ejercicio por la ventana más tardía, las comidas al final; los compromisos con hora no se tocan
+        while (r.cur > lim) {
+          let j = -1;
+          const cl = (x) =>
+            x.t.cat === "compromiso" ? -1 : x.t.cat === "comida" ? 1 : 2;
+          list.forEach((x, n) => {
+            const c = cl(x);
+            if (
+              c > 0 &&
+              (j < 0 ||
+                c > cl(list[j]) ||
+                (c === cl(list[j]) && W(x) >= W(list[j])))
+            )
+              j = n;
+          });
+          if (j < 0) break;
+          const x = list.splice(j, 1)[0];
+          fuera.push({
+            iid: x.t.id + "@" + key + "#" + x.k,
+            tid: x.t.id,
+            start: W(x),
+            est: estimate(x.t, Math.floor(W(x) / 60)),
+            fuera: 1,
+            w: x.w,
+            p1: 1,
+          });
+          r = run(list);
+        }
+        const out = old.concat(r.out, fuera);
+        S.plan[key] = out;
+        save();
+        return out;
+      }
+      function today() {
+        const k = dk(),
+          p = S.plan[k];
+        if (!p) return genPlan(k);
+        // si lo pendiente quedó en el pasado, el plan se corre a la hora actual (salvo con un temporizador en curso)
+        if (!S.timer) {
+          const n = new Date(),
+            nm = n.getHours() * 60 + n.getMinutes(),
+            f = p.find((i) => !i.fuera && !logOf(i.iid));
+          if (f && f.start < nm - 10) return genPlan(k);
+        }
+        return p;
+      }
+      // Índice iid→registro (Fase 5, rendimiento): se reconstruye solo si cambia el arreglo o su tamaño
+      let LIX = { r: null, n: -1, m: null };
+      const logOf = (iid) => {
+        if (LIX.r !== S.logs || LIX.n !== S.logs.length) {
+          LIX = { r: S.logs, n: S.logs.length, m: new Map() };
+          S.logs.forEach((l) => { if (!LIX.m.has(l.iid)) LIX.m.set(l.iid, l); });
+        }
+        return LIX.m.get(iid);
+      };
+      /* ===== ENERGÍA: chequeo frecuente + protocolo determinista (reglas, no predicción) ===== */
+      const minNow = () => {
+        const n = new Date();
+        return n.getHours() * 60 + n.getMinutes();
+      };
+      const minOf = (ts) => {
+        const d = new Date(ts);
+        return d.getHours() * 60 + d.getMinutes();
+      };
+      function ultimaComida() {
+        const pl = S.plan[dk()] || [];
+        return Math.max(
+          -1,
+          ...S.logs
+            .filter(
+              (l) =>
+                l.date === dk() &&
+                l.status === "hecha" &&
+                !l.sim &&
+                (S.tpl.find((t) => t.id === l.tid) || {}).cat === "comida",
+            )
+            .map((l) =>
+              l.endTs
+                ? minOf(l.endTs)
+                : (pl.find((i) => i.iid === l.iid) || { start: 0 }).start +
+                  l.real,
+            ),
+        );
+      }
+      function vEn() {
+        const n = minNow(),
+          w = tm(S.cfg.wake);
+        if (n < w || n > SL()) return "";
+        const hoy = S.en.filter((e) => dk(new Date(e.ts)) === dk()),
+          last = hoy[hoy.length - 1],
+          lm = ultimaComida(),
+          al = [];
+        let h = "";
+        if (!last || Date.now() - last.ts > 108e5)
+          h += `<div class="card"><div class="lb">Energía · ${last ? "hace " + Math.round((Date.now() - last.ts) / 6e4) + " min" : "sin chequeo hoy"}</div><div class="mu">¿Cómo estás ahora? 1 = agotado · 5 = a tope. Chequeo cada 3 h.</div><div class="row" style="margin-top:8px">${[1, 2, 3, 4, 5].map((v) => `<button class="btn sm s" data-a="en" data-i="${v}" aria-label="Energía ${v} de 5">${v}</button>`).join("")}</div></div>`;
+        if (last && last.v <= 2)
+          al.push(
+            "e",
+            "Energía baja (" +
+              last.v +
+              "/5). Protocolo: 10 min de pausa, agua y algo de comer. Evita foco profundo ahora si puedes; tú decides si retrasas el siguiente bloque.",
+          );
+        const sinComer = lm < 0 ? n - w : n - lm;
+        if (sinComer > 240)
+          al.push(
+            "",
+            "Llevas " +
+              (sinComer / 60).toFixed(1) +
+              " h sin comer. Sin combustible el foco cae y el entrenamiento rinde menos: come ahora.",
+          );
+        let ac = 0;
+        S.logs
+          .filter((l) => l.date === dk() && l.status === "hecha" && !l.sim)
+          .sort((a, b) => (a.startTs || 0) - (b.startTs || 0))
+          .forEach((l) => {
+            const c = (S.tpl.find((t) => t.id === l.tid) || {}).cat;
+            ac = c === "comida" || c === "recuperación" ? 0 : ac + l.real;
+          });
+        if (ac > 180)
+          al.push(
+            "",
+            "Llevas " +
+              (ac / 60).toFixed(1) +
+              " h de actividad sin una pausa real. Come, muévete 5 min o recupérate antes de seguir.",
+          );
+        for (let i = 0; i < al.length; i += 2)
+          h += `<div class="al ${al[i]}">${al[i + 1]}</div>`;
+        return h;
+      }
+      const KEEP_WAV = (() => {
+        const N = 8000,
+          b = new Uint8Array(44 + N).fill(128),
+          d = new DataView(b.buffer),
+          W = (o, t) => [...t].forEach((c, i) => (b[o + i] = c.charCodeAt(0)));
+        W(0, "RIFF");
+        d.setUint32(4, 36 + N, true);
+        W(8, "WAVEfmt ");
+        d.setUint32(16, 16, true);
+        d.setUint16(20, 1, true);
+        d.setUint16(22, 1, true);
+        d.setUint32(24, 8000, true);
+        d.setUint32(28, 8000, true);
+        d.setUint16(32, 1, true);
+        d.setUint16(34, 8, true);
+        W(36, "data");
+        d.setUint32(40, N, true);
+        let s = "";
+        b.forEach((x) => (s += String.fromCharCode(x)));
+        return "data:audio/wav;base64," + btoa(s);
+      })();
+      let KA; // Audio silencioso en bucle: ayuda a que Chrome no congele los avisos con la app en segundo plano (no garantizado)
+      function keep(on) {
+        try {
+          if (on) {
+            if (!KA) {
+              KA = new Audio(KEEP_WAV);
+              KA.loop = true;
+            }
+            const p = KA.play();
+            if (p && p.catch) p.catch(() => {});
+            if ("mediaSession" in navigator) {
+              navigator.mediaSession.metadata = new MediaMetadata({
+                title: "PLANIFICA · actividad en curso",
+              });
+              navigator.mediaSession.setActionHandler("pause", () => {
+                KA.play();
+              });
+            }
+          } else if (KA) KA.pause();
+        } catch (e) {}
+      }
+      document.addEventListener("pointerdown", () => {
+        if (S && S.timer) keep(1);
+      });
+
+      /* ===== TEMPORIZADOR (timestamps, nunca contadores) ===== */
+      let AC;
+      document.addEventListener(
+        "pointerdown",
+        () => {
+          try {
+            AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+            if (AC.state === "suspended") AC.resume();
+          } catch (e) {}
+        },
+        { once: true },
+      ); // el navegador exige un gesto para activar el sonido (también tras recargar)
+      function beep(n = 2) {
+        try {
+          AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+          if (AC.state === "suspended") AC.resume();
+          for (let i = 0; i < n; i++) {
+            const o = AC.createOscillator(),
+              g = AC.createGain();
+            o.connect(g);
+            g.connect(AC.destination);
+            o.frequency.value = 880;
+            g.gain.value = 0.15;
+            o.start(AC.currentTime + i * 0.3);
+            o.stop(AC.currentTime + i * 0.3 + 0.18);
+          }
+        } catch (e) {}
+        if (n && navigator.vibrate) navigator.vibrate([200, 100, 200]);
+      }
+      const elapsed = (t, now = Date.now()) =>
+        ((t.pausedAt || now) -
+          t.start -
+          t.paused.reduce((s, x) => s + x[1] - x[0], 0)) /
+        1000;
+      function tgt(t) {
+        const i = today().find((x) => x.iid === t.iid);
+        return ((i ? i.est.exp : t.exp || 30) + t.extra) * 60;
+      }
+      // Cruce de medianoche / cambio de zona horaria: si cambia la fecha local, se recalcula el plan
+      let LASTDAY = null;
+      function diaCambio() {
+        const k = dk();
+        if (LASTDAY === null) return void (LASTDAY = k);
+        if (k !== LASTDAY) {
+          LASTDAY = k;
+          render();
+          toast("Nuevo día: plan recalculado");
+        }
+      }
+      function tick() {
+        diaCambio();
+        const t = S.timer;
+        if (!t) return;
+        const e = elapsed(t),
+          g = tgt(t);
+        const a = $("#tt");
+        if (a) a.textContent = fmt(e);
+        const b = $("#tb");
+        if (b) b.style.width = Math.min(100, (e / g) * 100) + "%";
+        if (!t.w80 && e >= g * 0.8 && e < g) {
+          t.w80 = 1;
+          save();
+          beep(1);
+          toast("80% del tiempo estimado");
+        }
+        if (!t.w100 && e >= g) {
+          t.w100 = 1;
+          save();
+          beep(3);
+          toast("Tiempo cumplido. ¿Terminas o necesitas más?");
+        }
+        const it = (tpl(t.tid).items || [])[t.ii];
+        if (t.rest && it) {
+          const r = Math.max(0, it.rest - (Date.now() - t.rest) / 1000);
+          const x = $("#rs");
+          if (x)
+            x.textContent =
+              r > 0
+                ? "Descanso: " + Math.ceil(r) + " s"
+                : "Descanso listo: siguiente serie";
+          if (r <= 0 && !t.rb) {
+            t.rb = 1;
+            save();
+            beep(2);
+          }
+        }
+      }
+      const fmt = (s) =>
+        pad(Math.floor(s / 60)) + ":" + pad(Math.floor(s % 60));
+      const tpl = (id) =>
+        S.tpl.find((t) => t.id === id) ||
+        Object.values(S.extra || {})
+          .flat()
+          .find((t) => t.id === id) ||
+        {};
+      setInterval(tick, 500);
+      document.addEventListener("visibilitychange", tick);
+
+      /* ===== PANTALLAS ===== */
+      function ring(p) {
+        const r = 34,
+          c = 2 * Math.PI * r;
+        return `<svg width="84" height="84" viewBox="0 0 84 84" role="img" aria-label="Progreso ${Math.round(p * 100)}%"><circle cx="42" cy="42" r="${r}" fill="none" stroke="var(--bd)" stroke-width="8"/><circle cx="42" cy="42" r="${r}" fill="none" stroke="var(--ok)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - p)}" transform="rotate(-90 42 42)"/><text x="42" y="47" text-anchor="middle" fill="var(--tx)" font-size="16" font-weight="700">${Math.round(p * 100)}%</text></svg>`;
+      }
+      // bloques sin registrar cuya hora de ventana pasó hace más de 60 min
+      function venc() {
+        const n = new Date(),
+          nm = n.getHours() * 60 + n.getMinutes();
+        return today().filter(
+          (i) =>
+            !i.fuera &&
+            !logOf(i.iid) &&
+            i.w &&
+            tpl(i.tid).cat !== "compromiso" &&
+            tm(i.w) < nm - 60,
+        );
+      }
+      function vHoy() {
+        const all = today(),
+          pl = all.filter((i) => !i.fuera),
+          fu = all.filter((i) => i.fuera),
+          LM = limOf(dk()),
+          nw = new Date(),
+          nowM = nw.getHours() * 60 + nw.getMinutes(),
+          avail = Math.max(0, LM - Math.max(tm(S.cfg.wake), nowM)),
+          tot = pl
+            .filter((i) => !logOf(i.iid))
+            .reduce((s, i) => s + i.est.block, 0);
+        const end = pl.length
+            ? pl[pl.length - 1].start + pl[pl.length - 1].est.block
+            : 0,
+          over = Math.max(tot - avail, end - LM);
+        const dn = pl.filter(
+          (i) => logOf(i.iid) && logOf(i.iid).status === "hecha",
+        ).length;
+        let h = `<div class="card row sp"><div><div class="lb">Hoy</div><h2>${dn} de ${pl.length}</h2><div class="mu">${(tot / 60).toFixed(1)} h pendientes con buffers · ${(avail / 60).toFixed(1)} h hasta dormir</div></div>${ring(pl.length ? dn / pl.length : 0)}</div>`;
+        if (over > 0)
+          h += `<div class="al e"><b>Plan inviable hoy:</b> tu día tiene ${(tot / 60).toFixed(1)} h de actividades reales y solo hay ${(avail / 60).toFixed(1)} h disponibles (terminas ${hm(end)} y duermes ${hm(LM)}). Recorta SW, proyectos o lectura, o acepta dormir menos (no recomendado).</div>`;
+        else if (fu.length)
+          h += `<div class="al">Veredicto: el día no cabe completo. Lo que sí está agendado ocupa ${(tot / 60).toFixed(1)} h de ${(avail / 60).toFixed(1)} h y ${Math.round(fu.reduce((s, i) => s + i.est.block, 0))} min quedaron fuera.</div>`;
+        else if (avail - tot < 60)
+          h += `<div class="al">Día ajustado: te quedan ${Math.max(0, Math.round(avail - tot))} min de holgura. Un desplazamiento largo lo rompe.</div>`;
+        else
+          h += `<div class="al g">Día viable: ${Math.round(avail - tot)} min de holgura.</div>`;
+        const rc = [
+          ...new Set(
+            pl.filter((i) => i.est.sc < 1).map((i) => tpl(i.tid).name),
+          ),
+        ];
+        if (rc.length)
+          h += `<div class="al g">Ajuste automático para que todo quepa hoy: ${rc.map(esc).join(", ")} van recortadas. Si quitas algo, recuperan tiempo.</div>`;
+        if (fu.length)
+          h += `<div class="al">No caben antes de dormir (${hm(LM)}) y quedaron fuera de hoy: <b>${[...new Set(fu.map((i) => esc(tpl(i.tid).name)))].join(", ")}</b> (${Math.round(fu.reduce((s, i) => s + i.est.block, 0))} min). ${fu.some((i) => i.p1) ? "<b>Incluye bloques de prioridad 1: hoy no hay tiempo real para todo lo esencial; elige tú qué sacrificas.</b> " : ""}Se descartó primero lo menos prioritario. Si esto pasa a diario, tu rutina no cabe: baja horas de trabajo o mueve proyectos a fin de semana.</div>`;
+        if (over > 0)
+          h += `<div class="al e">Ni recortando lo prescindible alcanza: faltan ${Math.round(over)} min. Hay que reducir trabajo o dormir menos; decídelo tú.</div>`;
+        if (fu.length && !(S.ext || {})[dk()] && HD() > SL())
+          h += `<div class="al">Puedes extender hasta ${hm(HD())} (dormirías ≈${((tm(S.cfg.wake) + 1440 - HD()) / 60).toFixed(1)} h; no recomendado). <button class="btn sm s" data-a="ext">Extender hoy</button></div>`;
+        if (S.logs.length && Date.now() - S.cfg.lastBackup > 6048e5)
+          h += `<div class="al">Hace más de 7 días sin respaldo. <button class="btn sm s" data-a="exp">Exportar ahora</button></div>`;
+        {
+          const vc = venc();
+          if (vc.length && !S.timer)
+            h += `<div class="al">Ya pasó la hora de: <b>${[...new Set(vc.map((i) => esc(tpl(i.tid).name)))].join(", ")}</b>. ¿Las hiciste sin registrarlas? <button class="btn sm s" data-a="vdone">Sí, ya hechas</button> <button class="btn sm s" data-a="vskip">No, omitir</button></div>`;
+        }
+        h += vEn();
+        if (S.timer) h += vTimer();
+        h += `<div class="row"><button class="btn sm s" data-a="comp">+ Compromiso de hoy</button><button class="btn sm s" data-a="pnew">+ Pendiente</button><button class="btn sm s" data-a="replan">Restaurar quitadas</button><button class="btn sm s" data-a="sim">Simular historial</button></div>`;
+        {
+          const un = pl.filter((i) => !logOf(i.iid)),
+            gs = [];
+          let c = Math.max(nowM, tm(S.cfg.wake));
+          un.forEach((i) => {
+            if (i.start - c >= 10) gs.push([c, i.start - c]);
+            c = Math.max(c, i.start + i.est.block);
+          });
+          if (LM - c >= 10) gs.push([c, LM - c]);
+          const mx = gs.reduce((m, g) => Math.max(m, g[1]), 0);
+          if (gs.length)
+            h += `<div class="al g">Huecos libres (descansa o mete un pendiente; el ejercicio espera la digestión): ${gs.map((g) => hm(g[0]) + " (" + Math.round(g[1]) + " min)").join(" · ")}</div>`;
+          if (S.pend.length)
+            h += `<div class="card"><div class="lb">Pendientes</div>${S.pend.map((p) => `<div class="row sp"><span>${esc(p.name)} <span class="mu">${p.min} min${p.min <= mx ? " · cabe hoy" : ""}</span></span><span><button class="btn sm" data-a="padd" data-i="${p.id}">A hoy</button> <button class="btn sm s" data-a="pdel" data-i="${p.id}">Quitar</button></span></div>`).join("")}</div>`;
+        }
+        pl.forEach((i) => {
+          const t = tpl(i.tid),
+            l = logOf(i.iid),
+            e = i.est,
+            act = S.timer && S.timer.iid === i.iid;
+          h += `<div class="card bl" style="${l ? "opacity:.6" : ""}"><div class="tm">${hm(i.start)}<br>${hm(i.start + e.block)}</div><div style="flex:1"><b>${esc(t.name || "(actividad eliminada)")}</b> ${l ? `<span class="${l.status === "hecha" ? "ok" : "wn"}">· ${l.status}${l.status === "hecha" ? ` (${l.real} min)` : ""}</span>` : ""}
+  ${t.type === "rutina" ? '<div class="mu">' + t.items.map((x) => esc(x.n)).join(" · ") + "</div>" : ""}<div class="mu">${e.exp} min típico · ${e.lo}-${e.hi} min (80%) · conf. ${e.conf}%</div>
+  <div class="mu">+${e.bufMin} min buffer · +${e.trans} min transición · ${esc(t.cat || "")}${e.sc < 1 ? ` · <span class="wn">recortada al ${Math.round(e.sc * 100)}% por falta de tiempo</span>` : ""}</div>
+  ${l || act ? "" : `<div class="row" style="margin-top:8px"><button class="btn sm" data-a="start" data-i="${i.iid}">Iniciar</button><button class="btn sm s" data-a="why" data-i="${i.iid}">¿por qué?</button><button class="btn sm s" data-a="skip" data-i="${i.iid}">Omitir</button><button class="btn sm s" data-a="rm" data-i="${i.iid}">Quitar hoy</button></div>`}${act ? '<div class="ok">En curso ↑</div>' : ""}</div></div>`;
+        });
+        if (fu.length) {
+          h += '<div class="lb" style="margin-top:18px">Fuera de hoy</div>';
+          fu.forEach((i) => {
+            h += `<div class="card" style="opacity:.55"><b>${esc(tpl(i.tid).name)}</b> <span class="wn">· no cabe</span><div class="mu">${i.est.block} min con buffers · prioridad ${tpl(i.tid).prio}</div></div>`;
+          });
+        }
+        return h;
+      }
+      function vRut(t, tp) {
+        const it = tp.items[t.ii];
+        return `<div style="margin:10px 0">${tp.items.map((x, k) => `<div class="${k < t.ii ? "ok" : k > t.ii ? "mu" : ""}">${k < t.ii ? "✓" : k === t.ii ? "▶" : "○"} ${esc(x.n)}${x.k === "series" ? " · " + x.sets + "×" + x.reps : " · " + x.min + " min"}</div>`).join("")}${it ? `<div class="mu" id="rs">${t.rest ? "" : "Sin descanso activo"}</div><button class="btn sm" data-a="set">${it.k === "series" ? "Serie hecha (" + t.sets + "/" + it.sets + ")" : "Ejercicio hecho"}</button>` : '<b class="ok">Rutina completa. Pulsa Terminar.</b>'}</div>`;
+      }
+      function vTimer() {
+        const t = S.timer,
+          tp = tpl(t.tid);
+        return `<div class="card" style="border-color:var(--ok)"><div class="lb">En curso</div><b>${esc(tp.name)}</b><div class="big" id="tt">00:00</div><div class="bar"><i id="tb"></i></div>
+ <div class="mu">Puedes salir de la app: el tiempo sigue exacto (timestamps). Los avisos en segundo plano se intentan mantener, sin garantía.</div><div class="mu">Objetivo ${Math.round(tgt(t) / 60)} min${t.extra ? ` (incluye +${t.extra} min extra)` : ""}${t.pausedAt ? " · EN PAUSA" : ""}</div>
+ ${tp.type === "rutina" ? vRut(t, tp) : ""}
+ <div class="row"><button class="btn sm s" data-a="${t.pausedAt ? "resume" : "pause"}">${t.pausedAt ? "Reanudar" : "Pausar"}</button><button class="btn sm s" data-a="more">Necesito más tiempo (+5)</button><button class="btn sm" data-a="finish">Terminar</button><button class="btn sm s" data-a="cancel">Cancelar</button></div></div>`;
+      }
+      function vAct() {
+        let h = `<div class="row sp"><h2>Actividades</h2><button class="btn" data-a="new">+ Nueva</button></div><div class="mu">Pulsa Editar en una actividad. Las estimaciones se calibran con tu historial.</div>`;
+        S.tpl.forEach((t) => {
+          const e = estimate(t, 12);
+          h += `<div class="card"><b>${esc(t.name)}</b> <span class="mu">· ${esc(t.cat)} · ${esc(t.freq)} · ${esc(t.win || "sin ventana")}</span><div class="mu">${e.exp} min (${e.lo}-${e.hi}) · confianza ${e.conf}% · ${e.n} registros</div><div class="row" style="margin-top:6px"><button class="btn sm s" data-a="edit" data-i="${t.id}">Editar</button>${t.freq === "demanda" ? `<button class="btn sm" data-a="addp" data-i="${t.id}">Añadir a hoy</button>` : ""}</div></div>`;
+        });
+        return h;
+      }
+      function vAju() {
+        const c = S.cfg,
+          n = S.logs.length;
+        return `<h2>Ajustes</h2><div class="card"><div class="g2"><label class="lb">Despertar<input type="time" id="cw" value="${c.wake}"></label><label class="lb">Dormir (objetivo)<input type="time" id="cs" value="${c.sleep}"></label><label class="lb">Límite absoluto<input type="time" id="ch" value="${c.hard || "00:30"}"></label></div><button class="btn sm" data-a="cfg">Guardar horario</button></div>
+ <div class="card"><div class="lb">Tema</div><div class="row"><button class="btn sm s" data-a="theme" data-i="auto">Auto</button><button class="btn sm s" data-a="theme" data-i="light">Claro</button><button class="btn sm s" data-a="theme" data-i="dark">Oscuro</button></div></div>
+ <div class="card"><div class="lb">Respaldo</div><p class="mu">Tus datos viven en este navegador y pueden borrarse. Exporta cada semana.</p><p class="mu" id="pst">${pstTxt()}</p>${DEFER ? '<div class="row" style="margin-bottom:8px"><button class="btn sm" data-a="inst">Instalar como app</button></div>' : ""}<div class="row"><button class="btn sm" data-a="exp">Exportar JSON</button><button class="btn sm s" data-a="imp">Importar JSON</button><button class="btn sm s" data-a="impt">Pegar JSON</button></div></div>
+ <div class="card"><div class="lb">Calibración (${n} registros)</div><p class="mu">Simular historial genera 12 días ficticios por actividad para ver cómo se calibra el motor. No es tu realidad: bórralo al empezar de verdad.</p><div class="row"><button class="btn sm" data-a="sim">Simular historial</button><button class="btn sm s" data-a="clrsim">Borrar simulados</button><button class="btn sm s" data-a="clr">Borrar todo</button></div></div>
+ <div class="al">Límite técnico: sin servidor ni PWA instalada no hay notificaciones con la app cerrada. Aviso con sonido y vibración con la app abierta, y al reabrir verás el estado real (el tiempo se mide con timestamps, siempre exacto).</div>`;
+      }
+      function render() {
+        try {
+          render0();
+        } catch (e) {
+          console.error(e);
+          $("#v").innerHTML =
+            `<div class="al e"><b>Error al mostrar la app:</b> ${esc(e.message)}<div class="row" style="margin-top:8px"><button class="btn sm" data-a="rescue">Restablecer datos</button><button class="btn sm s" data-a="exp">Ver respaldo</button></div></div>`;
+        }
+      }
+      function render0() {
+        consol();
+        $("#dt").textContent = new Date().toLocaleDateString("es", {
+          weekday: "long",
+          day: "numeric",
+          month: "short",
+        });
+        document
+          .querySelectorAll(".tabs button")
+          .forEach((b) => {
+            b.classList.toggle("on", b.dataset.i === TAB);
+            b.setAttribute("aria-current", b.dataset.i === TAB ? "page" : "false");
+          });
+        $("#v").innerHTML =
+          TAB === "hoy" ? vHoy() : TAB === "sem" ? vSem() : TAB === "met" ? vMet() : TAB === "hab" ? vHab() : TAB === "act" ? vAct() : vAju();
+        tick();
+      }
+      let LF = null; // elemento que abrió la hoja (para devolverle el foco)
+      function sheet(h) {
+        if ($("#ov").hidden) LF = document.activeElement;
+        $("#sh").innerHTML = h;
+        const t = $("#sh").querySelector("h2");
+        if (t) {
+          t.id = "sh_t";
+          $("#ov").setAttribute("aria-labelledby", "sh_t"); // el lector de pantalla anuncia el título
+        }
+        $("#ov").hidden = false;
+        $("#sh").tabIndex = -1;
+        $("#sh").focus();
+      }
+      function closeS() {
+        if ($("#ov").hidden) return;
+        $("#ov").hidden = true;
+        if (LF && LF.isConnected && LF.focus) LF.focus();
+        LF = null;
+      }
+      function formTpl(t) {
+        const n = !t;
+        t = t || {
+          id: "u" + Date.now(),
+          name: "",
+          cat: "hogar",
+          base: 30,
+          prep: 0,
+          trans: 5,
+          energy: 2,
+          type: "normal",
+          prio: 2,
+          freq: "diaria",
+          win: "",
+          items: [],
+        };
+        const o = (a, v) =>
+          a
+            .map((x) => `<option ${x === v ? "selected" : ""}>${x}</option>`)
+            .join("");
+        sheet(`<h2>${n ? "Nueva" : "Editar"} actividad</h2><input type="hidden" id="f_id" value="${t.id}">
+ <label class="lb">Nombre<input id="f_name" value="${esc(t.name)}"></label>
+ <div class="g2"><label class="lb">Categoría<select id="f_cat">${o(CATS, t.cat)}</select></label><label class="lb">Tipo<select id="f_type">${o(["normal", "rutina"], t.type)}</select></label>
+ <label class="lb">Duración (min)<input type="number" id="f_base" value="${t.base}" min="1"></label><label class="lb">Preparación (min)<input type="number" id="f_prep" value="${t.prep}" min="0"></label>
+ <label class="lb">Transición (min)<input type="number" id="f_trans" value="${t.trans}" min="0"></label><label class="lb">Energía (1-3)<input type="number" id="f_energy" value="${t.energy}" min="1" max="3"></label>
+ <label class="lb">Prioridad (1-3)<input type="number" id="f_prio" value="${t.prio}" min="1" max="3"></label><label class="lb">Frecuencia<select id="f_freq">${o(["diaria", "lv", "fs", "demanda"], t.freq)}</select></label>
+ <label class="lb">Horas (HH:MM, varias con coma)<input id="f_win" value="${esc(t.win || "")}" placeholder="09:00,11:00"></label><label class="lb">Descanso después (min)<input type="number" id="f_rest" value="${t.rest || 0}" min="0"></label><label class="lb">Días fijos (opcional: L M X J V S D)<input id="f_days" value="${(t.days || []).map((d) => "DLMXJVS"[d]).join("")}" placeholder="LXV = lun, mié, vie"></label></div>
+ <label class="lb">Componentes de la rutina (uno por línea)<textarea id="f_items" rows="6">${esc(itemsText(t.items || []))}</textarea></label>
+ <div class="mu">lv = lunes a viernes · fs = fin de semana · demanda = no se planifica sola. Tipo rutina: la duración es la suma de sus componentes. Formato: «Flexiones; 5x20; 2.5; 60» (series; seg/rep; descanso) o «Cardio; 20 min».</div>
+ <div class="row" style="margin-top:12px"><button class="btn" data-a="save">Guardar</button>${!n && t.cat !== "comida" ? `<button class="btn s" data-a="del" data-i="${t.id}">Eliminar</button>` : ""}<button class="btn s" data-a="close">Cerrar</button></div>`);
+      }
+
+      
+/* ===== SEMANA / MES / AÑO (Fase 2) ===== */
+let WV='sem',WO=0;   // vista (sem|mes|año) y desplazamiento
+const DN=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+const BAL={salud:['ejercicio','comida'],trabajo:['trabajo','compromiso'],estudio:['idiomas','lectura','proyectos'],descanso:['recuperación']};
+// Vista previa de un día futuro con el MISMO planificador; no deja el plan guardado (solo hoy se persiste)
+function preview(key){if(key===dk())return today();const ant=S.plan[key],p=genPlan(key);if(ant)S.plan[key]=ant;else delete S.plan[key];save();return p}
+// Energía media por hora (solo con ≥3 chequeos en esa hora): base de la regla "alta energía no en horas flojas"
+function enHoras(){const m={};S.en.forEach(e=>{const h=new Date(e.ts).getHours();(m[h]=m[h]||[]).push(e.v)});return m}
+// Análisis determinista de un día: carga, huecos, balance, conflictos y energía
+function analiza(key){const all=preview(key),pl=all.filter(i=>!i.fuera),fu=all.filter(i=>i.fuera),cat=i=>tpl(i.tid).cat||'';
+ const avail=SL()-tm(S.cfg.wake),used=pl.reduce((s,i)=>s+i.est.block,0),bal={salud:0,trabajo:0,estudio:0,descanso:0,otros:0};
+ pl.forEach(i=>{bal[Object.keys(BAL).find(k=>BAL[k].includes(cat(i)))||'otros']+=i.est.block});
+ const choque=pl.filter(i=>cat(i)==='compromiso'&&i.w&&i.start>tm(i.w)+5),eh=enHoras();
+ const bajo=pl.filter(i=>{const v=eh[Math.floor(i.start/60)%24]||[];return tpl(i.tid).energy>=3&&v.length>=3&&v.reduce((a,b)=>a+b,0)/v.length<=2.3});
+ return {key,pl,fu,used,avail,free:avail-used,bal,choque,bajo,mal:fu.length>0||choque.length>0}}
+function mapaMin(){const M={};S.logs.forEach(l=>{if(l.status==='hecha'&&!l.nocal)M[l.date]=(M[l.date]||0)+l.real});return M}
+const nm_=i=>esc(tpl(i.tid).name||'(eliminada)');
+function vSem(){const T={sem:'Semana',mes:'Mes',año:'Año'};
+ return `<div class="row sp"><h2>${T[WV]}</h2><div class="row"><button class="btn sm s" data-a="wo" data-i="-1" aria-label="Anterior">‹</button><button class="btn sm s" data-a="wo" data-i="0">Hoy</button><button class="btn sm s" data-a="wo" data-i="1" aria-label="Siguiente">›</button></div></div>
+ <div class="row">${Object.keys(T).map(k=>`<button class="btn sm ${k===WV?'':'s'}" data-a="wv" data-i="${k}">${T[k]}</button>`).join('')}<button class="btn sm s" data-a="wcomp">+ Compromiso (varios días)</button></div>`+(WV==='mes'?vMes():WV==='año'?vAnio():vSemana())}
+function vSemana(){const n=new Date();n.setDate(n.getDate()+WO*7-((n.getDay()+6)%7));const M=mapaMin(),hoy=dk(),A=[];let h='';
+ for(let i=0;i<7;i++){const d=new Date(n);d.setDate(n.getDate()+i);const k=dk(d);A.push({d,k,a:k>=hoy?analiza(k):null})}
+ const mal=A.filter(x=>x.a&&x.a.mal);
+ h+=mal.length?`<div class="al e"><b>Antes de confirmar la semana:</b> ${mal.map(x=>DN[x.d.getDay()]+' '+x.d.getDate()+(x.a.fu.length?' ('+Math.round(x.a.fu.reduce((s,i)=>s+i.est.block,0))+' min no caben)':' (compromiso desplazado)')).join(' · ')}. Revisa las sugerencias; nada se cambia sin tu confirmación.</div>`:`<div class="al g">Semana viable: ningún día desborda y los compromisos respetan su hora.</div>`;
+ if(S.goals.length){const G=S.goals.map(g=>({g,d:dictamen(g)})),tot=G.reduce((x,y)=>x+y.d.hS,0),lib=G[0].d.free/60;
+  h+=`<div class="card"><div class="lb">Metas vs. horas libres (próximos 7 días)</div>${G.map(({g,d})=>`<div class="${d.vd==='viable'?'ok':'wn'}">${esc(g.name)}: pide ${d.hS.toFixed(1)} h/sem · ${d.vd}</div>`).join('')}<div class="${tot>lib?'wn':'mu'}">Juntas piden ${tot.toFixed(1)} h/sem y hay ${lib.toFixed(1)} h libres. ${tot>lib?'No caben todas a la vez: cada meta se juzga sola, pero compiten por las mismas horas.':'Caben, si cumples tu adherencia real.'}</div></div>`}
+ A.forEach(({d,k,a})=>{h+=`<div class="card"><div class="row sp"><b>${DN[d.getDay()]} ${d.getDate()}</b><span class="lb">${k===hoy?'hoy':''}</span></div>`;
+  if(!a)h+=`<div class="mu">Pasado: ${Math.round((M[k]||0)/6)/10} h hechas${M[k]?'':' · sin registros'}</div>`;
+  else{h+=`<div class="${a.mal?'wn':'ok'}">${(a.used/60).toFixed(1)} h agendadas · ${Math.max(0,Math.round(a.free))} min libres</div><div class="mu">Salud ${(a.bal.salud/60).toFixed(1)} h · Trabajo ${(a.bal.trabajo/60).toFixed(1)} h · Estudio ${(a.bal.estudio/60).toFixed(1)} h · Descanso ${(a.bal.descanso/60).toFixed(1)} h</div>`;
+   if(a.fu.length)h+=`<div class="wn">Fuera: ${[...new Set(a.fu.map(nm_))].join(', ')}</div>`;
+   if(a.choque.length)h+=`<div class="wn">No se respeta la hora de: ${a.choque.map(nm_).join(', ')}</div>`;
+   if(a.bajo.length)h+=`<div class="wn">Alta energía en horas en que sueles estar flojo: ${[...new Set(a.bajo.map(nm_))].join(', ')} (según tus chequeos)</div>`;
+   const c=a.fu.length&&[...a.pl].reverse().find(i=>tpl(i.tid).prio>1&&!logOf(i.iid));
+   if(c)h+=`<div class="row" style="margin-top:6px"><button class="btn sm s" data-a="wrm" data-i="${c.iid}">Sugerencia: quitar ${nm_(c)} de este día</button></div>`}
+  h+='</div>'});return h}
+function vMes(){const M=mapaMin(),b=new Date();b.setDate(1);b.setMonth(b.getMonth()+WO);const y=b.getFullYear(),m=b.getMonth(),nd=new Date(y,m+1,0).getDate(),hoy=dk();let c='',tot=0,act=0,sin=0;
+ for(let i=0;i<(b.getDay()+6)%7;i++)c+='<div></div>';
+ for(let d=1;d<=nd;d++){const k=dk(new Date(y,m,d)),v=M[k]||0;tot+=v;if(v)act++;else if(k<hoy)sin++;c+=`<div class="mc" style="background:color-mix(in srgb,var(--ok) ${Math.min(100,Math.round(v/4.2))}%,var(--bd));${k===hoy?'outline:2px solid var(--tx)':''}" aria-label="${d}: ${Math.round(v)} min hechos">${d}</div>`}
+ let r=0;for(let i=0;i<400;i++){const x=new Date();x.setDate(x.getDate()-i);if(M[dk(x)])r++;else if(i>0)break}
+ return `<div class="card"><div class="lb">${b.toLocaleDateString('es',{month:'long',year:'numeric'})} · intensidad = minutos hechos (420 = lleno)</div><div class="mg" style="margin-top:8px">${c}</div></div><div class="card"><b>${(tot/60).toFixed(1)} h hechas</b> en ${act} días · ${sin} días pasados sin registros (huecos) · racha actual: <b>${r}</b> días seguidos</div>`}
+function vAnio(){const M=mapaMin(),y=new Date().getFullYear()+WO,H=Array(12).fill(0),D=Array(12).fill(0);Object.keys(M).forEach(k=>{if(+k.slice(0,4)===y){H[+k.slice(5,7)-1]+=M[k];D[+k.slice(5,7)-1]++}});const mx=Math.max(1,...H);
+ return `<div class="card"><div class="lb">${y} · horas hechas por mes</div>${H.map((v,i)=>`<div class="row sp" style="margin-top:6px"><span class="mu" style="width:34px">${new Date(y,i,1).toLocaleDateString('es',{month:'short'})}</span><div class="bar" style="flex:1"><i style="width:${v/mx*100}%"></i></div><span class="mu" style="width:92px;text-align:right">${(v/60).toFixed(0)} h · ${D[i]} d</span></div>`).join('')}</div>`}
+const ACC={
+ wv(i){WV=i;WO=0;render()},wo(i){WO=+i?WO+ +i:0;render()},
+ wrm(i){const m=i.split('@'),k=m[1].split('#')[0],t=tpl(m[0]);ask('¿Quitar '+(t.name||'actividad')+' del '+k.slice(5)+'? (reversible con "Restaurar quitadas" ese día)',()=>{(S.rm=S.rm||{});(S.rm[k]=S.rm[k]||[]).push(m[0]+'#'+m[1].split('#')[1]);if(k===dk())genPlan(k);save();render();toast('Quitada de ese día')})},
+ wcomp(){sheet(`<h2>Compromiso</h2><p class="mu">Puede durar varios días seguidos. Antes de añadirlo se revisa si sobrecarga algún día.</p><label class="lb">Nombre<input id="c_n"></label><div class="g2"><label class="lb">Duración diaria (min)<input type="number" id="c_d" value="60" min="5"></label><label class="lb">Hora (opcional)<input type="time" id="c_t"></label><label class="lb">Desde<input type="date" id="c_f" value="${dk()}"></label><label class="lb">Días seguidos (1-14)<input type="number" id="c_z" value="1" min="1" max="14"></label></div><div class="row"><button class="btn" data-a="wcompok">Revisar y añadir</button><button class="btn s" data-a="close">Cerrar</button></div>`)},
+ wcompok(){const n=$('#c_n').value.trim(),d=+$('#c_d').value,t=$('#c_t').value,f=$('#c_f').value,z=Math.min(14,Math.max(1,+$('#c_z').value||1));
+  if(!n||!(d>=5)||!f)return toast('Falta nombre, duración o fecha');if(f<dk())return toast('Esa fecha ya pasó');
+  const snap=JSON.stringify(S.extra),keys=[],id0=Date.now();S.extra=S.extra||{};
+  const ap=()=>{keys.length=0;for(let i=0;i<z;i++){const dt=new Date(f+'T12:00:00');dt.setDate(dt.getDate()+i);const k=dk(dt);keys.push(k);(S.extra[k]=S.extra[k]||[]).push({id:'x'+id0+'_'+i,name:n,cat:'compromiso',base:d,prep:0,trans:0,energy:2,type:'normal',prio:1,freq:'diaria',win:t})}};
+  ap();const mal=keys.map(analiza).filter(a=>a.mal);S.extra=JSON.parse(snap);   // simulación: se revierte
+  const fin=()=>{ap();keys.forEach(k=>{if(k===dk())genPlan(k)});save();closeS();render();toast('Compromiso añadido')};
+  if(!mal.length)return fin();
+  ask('Esto sobrecarga: '+mal.map(a=>a.key.slice(5)+(a.fu.length?' ('+a.fu.length+' bloques fuera)':' (hora no respetada)')).join(', ')+'. ¿Añadir igual?',fin)}};
+
+
+/* ===== METAS Y SIMULADOR (Fase 3) — estimaciones, no garantías ===== */
+const SEM_MES=52/12;   // semanas por mes
+let SF={tid:'',f:5,m:30,u:100,l:'repeticiones',j:0,ok:0};   // últimos datos del simulador
+// Adherencia real = días en que tocaba y se hizo / días en que tocaba (últimos 28, sin simulados). Con poco historial se usa un supuesto visible del 75%
+function adherencia(tid){const t=S.tpl.find(x=>x.id===tid);let esp=0,hec=0;
+ if(t)for(let i=1;i<=28;i++){const d=new Date();d.setDate(d.getDate()-i);if(!applies(t,d))continue;esp++;if(S.logs.some(l=>l.date===dk(d)&&l.tid===tid&&l.status==='hecha'&&!l.sim))hec++}
+ const real=t&&esp>=7&&S.logs.some(l=>l.tid===tid&&!l.sim);
+ return real?{a:Math.max(.05,hec/esp),txt:`historial real: ${hec} de ${esp} días (28 d)`}:{a:.75,txt:'supuesto 75% (sin historial real suficiente; los simulados no cuentan)'}}
+const ESC={opt:['Plan perfecto','var(--ok)'],real:['Mi ritmo real','var(--tx)'],pes:['Pesimista','var(--wn)']};
+// Unidades acumuladas tras 'sem' semanas con adherencia 'a' (mejora mensual compuesta j%)
+const acum=(o,a,sem)=>{let u=0;for(let w=0;w<sem;w++)u+=o.f*a*o.u*Math.pow(1+o.j/100,Math.floor(w/SEM_MES));return u};
+function curvas(o,ad){const A={opt:1,real:ad,pes:ad*.7},mx=acum(o,1,52)||1;
+ const P=k=>Array.from({length:53},(_,w)=>`${(30+w/52*640).toFixed(1)},${(190-acum(o,A[k],w)/mx*170).toFixed(1)}`).join(' ');
+ return `<svg viewBox="0 0 700 215" width="100%" role="img" aria-label="Volumen acumulado en 12 meses: plan perfecto frente a tu ritmo real"><line x1="30" y1="190" x2="670" y2="190" stroke="var(--bd)"/><line x1="30" y1="20" x2="30" y2="190" stroke="var(--bd)"/>${['opt','real','pes'].map(k=>`<polyline fill="none" stroke="${ESC[k][1]}" stroke-width="3" ${k==='pes'?'stroke-dasharray="6 5"':''} points="${P(k)}"/>`).join('')}<text x="34" y="14" fill="var(--mu)" font-size="11">${Math.round(mx)} ${esc(o.l)} (tope 12 m)</text><text x="670" y="208" text-anchor="end" fill="var(--mu)" font-size="11">semanas →</text></svg>`}
+function vSim(){const o=SF;let h=`<div class="card"><div class="lb">Simulador · ¿qué pasa si…?</div>
+ <label class="lb">Actividad<select id="s_t"><option value="">Personalizada</option>${S.tpl.map(t=>`<option value="${esc(t.id)}" ${t.id===o.tid?'selected':''}>${esc(t.name)}</option>`).join('')}</select></label>
+ <div class="g2"><label class="lb">Veces por semana<input type="number" id="s_f" value="${o.f}" min="0.5" max="7" step="0.5"></label><label class="lb">Minutos por sesión (vacío = estimado)<input type="number" id="s_m" value="${o.m}" min="1"></label>
+ <label class="lb">Unidades por sesión<input type="number" id="s_u" value="${o.u}" min="1"></label><label class="lb">Unidad<input id="s_l" value="${esc(o.l)}"></label></div>
+ <label class="lb">Mejora mensual de la unidad (%, 0 = sin progresión)<input type="number" id="s_j" value="${o.j}" min="0" max="10" step="0.5"></label><button class="btn" data-a="simu">Simular</button></div>`;
+ if(!o.ok)return h;
+ const t=S.tpl.find(x=>x.id===o.tid),ad=t?adherencia(o.tid):{a:.75,txt:'supuesto 75% (actividad personalizada)'},A={opt:1,real:ad.a,pes:ad.a*.7};
+ h+=`<div class="card"><div class="lb">Proyección · estimación, no garantía</div><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><tr class="mu"><td></td>${[1,3,6,12].map(m=>`<td>${m} m</td>`).join('')}</tr>`;
+ ['opt','real','pes'].forEach(k=>{h+=`<tr style="border-top:1px solid var(--bd)"><td><b>${ESC[k][0]}</b><br><span class="mu">${Math.round(A[k]*100)}%</span></td>${[1,3,6,12].map(m=>{const ses=o.f*SEM_MES*m*A[k],hr=ses*o.m/60;return `<td>${Math.round(acum(o,A[k],m*SEM_MES))} ${esc(o.l)}<br><span class="mu">${hr.toFixed(0)} h · ${(hr/24).toFixed(1)} días completos</span></td>`}).join('')}</tr>`});
+ h+=`</table></div>${curvas(o,ad.a)}<div class="row mu"><span style="color:var(--ok)">━ plan perfecto</span><span>━ mi ritmo real</span><span class="wn">┅ pesimista</span></div></div>
+ <div class="card"><div class="lb">Supuestos (todos editables)</div><div class="mu">Adherencia: ${ad.txt}. Pesimista = real × 0.7. Duración: ${o.m} min por sesión. Meses = 52/12 semanas. Progresión: ${o.j}% mensual compuesto. Sin lesiones, viajes ni cambios de rutina. Es una extrapolación lineal, no una predicción.</div></div>`;return h}
+// Ingeniería inversa de una meta: frecuencia necesaria, tiempo semanal, fecha realista, hitos y dictamen
+function dictamen(g){const ad=adherencia(g.tid||''),sem=Math.max(.1,(new Date(g.date+'T12:00:00')-Date.now())/6048e5),ses=Math.ceil(g.target/g.u),
+ hechas=g.tid?S.logs.filter(l=>l.tid===g.tid&&l.status==='hecha'&&!l.sim&&l.date>=g.created).length:0,rest=Math.max(0,ses-hechas),
+ fN=rest/sem/ad.a,hS=fN*g.m/60;let free=0;for(let i=1;i<=7;i++)free+=Math.max(0,analiza(dk(new Date(Date.now()+i*864e5))).free);
+ const ritmo=g.f*ad.a,semR=ritmo>0?rest/ritmo:Infinity,ratio=fN*g.m/Math.max(1,free),vd=fN>7||ratio>1?'poco realista':ratio>.6||fN>5?'ajustado':'viable';
+ return {ad,sem,ses,hechas,rest,fN,hS,free,ritmo,semR,fechaR:semR<1e4?new Date(Date.now()+semR*6048e5):null,ratio,vd}}
+function vMet(){let h=`<div class="row sp"><h2>Metas</h2><button class="btn" data-a="gnew">+ Meta</button></div>`;
+ if(!S.goals.length)h+=`<div class="mu">Una meta con fecha se traduce en frecuencia, tiempo semanal, hitos y dictamen. Pulsa + Meta.</div>`;
+ S.goals.forEach(g=>{const d=dictamen(g),c=d.vd==='viable'?'g':d.vd==='ajustado'?'':'e',F=x=>x.toLocaleDateString('es',{day:'numeric',month:'short',year:'numeric'});
+  h+=`<div class="card"><div class="row sp"><b>${esc(g.name)}</b><button class="btn sm s" data-a="gdel" data-i="${esc(g.id)}">Borrar</button></div><div class="mu">${g.target} ${esc(g.l)} para el ${F(new Date(g.date+'T12:00:00'))} · ${d.hechas} de ${d.ses} sesiones hechas</div>
+  <div class="al ${c}"><b>Dictamen: ${d.vd}.</b> Necesitas ${d.fN.toFixed(1)} sesiones/semana planificadas (${d.hS.toFixed(1)} h/sem) con tu adherencia (${Math.round(d.ad.a*100)}%, ${d.ad.txt}). Tienes ~${Math.round(d.free/60*10)/10} h libres en los próximos 7 días${d.ratio>1?': no caben':''}.</div>
+  <div class="mu"><b>Con tu ritmo actual (${g.f}/sem):</b> ${d.fechaR?'terminas hacia '+F(d.fechaR)+(d.fechaR>new Date(g.date+'T12:00:00')?' (tarde)':' (a tiempo)'):'no terminas'}.</div>
+  ${d.vd!=='viable'?`<div class="mu"><b>Alternativas:</b> (1) extender la fecha a ${d.fechaR?F(d.fechaR):'más adelante'}; (2) subir la frecuencia a ${Math.min(7,Math.ceil(d.fN))}/sem; (3) reducir el alcance a ~${Math.floor(d.ritmo*d.sem*g.u+d.hechas*g.u)} ${esc(g.l)} para esa fecha.</div>`:''}
+  <div class="lb" style="margin-top:8px">Hitos (estimación)</div>${[.25,.5,.75,1].map(p=>`<div class="mu">${F(new Date(Date.now()+d.sem*p*6048e5))} → ${Math.round(g.target*p)} ${esc(g.l)} (≈ ${Math.ceil(d.ses*p)} sesiones)</div>`).join('')}</div>`});
+ return h+vSim()}
+const ACC3={
+ gnew(){sheet(`<h2>Nueva meta</h2><label class="lb">Meta<input id="g_n" placeholder="Ej.: 10 000 flexiones"></label><div class="g2"><label class="lb">Cantidad total<input type="number" id="g_t" min="1"></label><label class="lb">Unidad<input id="g_l" value="repeticiones"></label><label class="lb">Unidades por sesión<input type="number" id="g_u" value="100" min="1"></label><label class="lb">Minutos por sesión<input type="number" id="g_m" value="30" min="1"></label><label class="lb">Sesiones/sem que haces hoy<input type="number" id="g_f" value="5" min="0.5" max="7" step="0.5"></label><label class="lb">Fecha límite<input type="date" id="g_d"></label></div><label class="lb">Actividad vinculada (cuenta tu progreso y adherencia)<select id="g_a"><option value="">Ninguna</option>${S.tpl.map(t=>`<option value="${esc(t.id)}">${esc(t.name)}</option>`).join('')}</select></label><div class="row"><button class="btn" data-a="gok">Guardar</button><button class="btn s" data-a="close">Cerrar</button></div>`)},
+ gok(){const g=k=>$('#g_'+k).value,o={id:'g'+Date.now(),name:g('n').trim(),target:+g('t'),l:g('l').trim()||'unidades',u:+g('u'),m:+g('m'),f:+g('f'),date:g('d'),tid:g('a'),created:dk()};
+  if(!o.name||!(o.target>0)||!(o.u>0)||!(o.m>0)||!(o.f>0)||!o.date)return toast('Faltan datos');if(o.date<=dk())return toast('La fecha debe ser futura');S.goals.push(o);save();closeS();render()},
+ gdel(i){ask('¿Borrar la meta?',()=>{S.goals=S.goals.filter(g=>g.id!==i);save();render()})},
+ simu(){const v=k=>$('#s_'+k).value,t=S.tpl.find(x=>x.id===v('t'));SF={tid:v('t'),f:Math.min(7,Math.max(.5,+v('f')||1)),m:Math.max(1,+v('m')||(t?estimate(t,12).exp:30)),u:Math.max(1,+v('u')||1),l:v('l')||'unidades',j:Math.min(10,Math.max(0,+v('j')||0)),ok:1};render()}};
+
+
+/* ===== HÁBITOS, DISCIPLINA Y MOTIVACIÓN (Fase 4) ===== */
+const META_ADH=.85,R25=.25;   // meta de adherencia; "dentro del rango" = real a ±25% de lo estimado
+const real_=l=>l.status==='hecha'&&!l.sim&&!l.nocal&&!l.min;   // cuenta para calibrar y para XP (no simulados, no "ya hechas", no modo mínimo)
+// Historial diario S.hd[fecha]={pl,hc}: planificadas y hechas. Se congela al pasar el día (los planes se podan a 14 días)
+function consol(){const h=dk();Object.keys(S.plan).forEach(k=>{if(k<h&&!S.hd[k]){const p=S.plan[k].filter(i=>!i.fuera);if(p.length)S.hd[k]={pl:p.length,hc:p.filter(i=>S.logs.some(l=>l.iid===i.iid&&l.status==='hecha')).length}}})}
+function dia(k){if(S.hd[k])return S.hd[k];const p=(S.plan[k]||[]).filter(i=>!i.fuera);return {pl:p.length,hc:p.filter(i=>logOf(i.iid)&&logOf(i.iid).status==='hecha').length}}
+const diaOk=k=>{const d=dia(k);return d.pl?d.hc/d.pl>=META_ADH:S.logs.some(l=>l.date===k&&l.status==='hecha'&&!l.sim)};
+const kd=i=>dk(new Date(Date.now()-i*864e5));
+function racha(){let r=0;for(let i=0;i<400;i++){if(diaOk(kd(i)))r++;else if(i>0)break}return r}
+function adh(a,b){let pl=0,hc=0;for(let i=a;i<=b;i++){const d=dia(kd(i));pl+=d.pl;hc+=d.hc}return pl?hc/pl:null}   // días kd(a)..kd(b) atrás
+function realismo(dias=28){const L=S.logs.filter(l=>real_(l)&&l.date>=kd(dias)),ok=L.filter(l=>Math.abs(l.real-l.est)/Math.max(1,l.est)<=R25).length;return L.length>=5?{p:ok/L.length,n:L.length,sesgo:L.reduce((s,l)=>s+l.real/Math.max(1,l.est),0)/L.length}:null}
+// Foco real: minutos hechos de trabajo con energía 3 (foco profundo) frente a todo el trabajo registrado
+function foco(dias=7){let f=0,t=0;const D=new Set();S.logs.forEach(l=>{const p=S.tpl.find(x=>x.id===l.tid);if(!p||p.cat!=='trabajo'||l.status!=='hecha'||l.sim||l.date<kd(dias))return;t+=l.real;if(p.energy>=3)f+=l.real;D.add(l.date)});return {f,t,d:D.size}}
+// XP DERIVADO del historial (no se guarda: no se puede inflar editando contadores)
+function xp(){let t=0;const dd={};S.logs.filter(real_).forEach(l=>{if(Math.abs(l.real-l.est)/Math.max(1,l.est)<=R25)dd[l.date]=Math.min(120,(dd[l.date]||0)+10)});   // +10 por actividad hecha dentro del rango (tope 120/día)
+ t+=Object.values(dd).reduce((a,b)=>a+b,0);
+ const ks=Object.keys(S.hd).sort();ks.forEach(k=>{const d=S.hd[k];if(d.pl&&d.hc/d.pl>=META_ADH)t+=25});   // +25 por día cumplido (≥85% de lo planificado)
+ let run=0;const ini=ks[0];if(ini){for(let d=new Date(ini+'T12:00:00');dk(d)<dk();d.setDate(d.getDate()+1)){if(S.hd[dk(d)]&&diaOk(dk(d))){run++;if(run===7)t+=50;if(run===14)t+=100;if(run===30)t+=200}else run=0}}   // hitos de racha, una vez por racha
+ const sem={};S.logs.filter(real_).forEach(l=>{const d=new Date(l.date+'T12:00:00');d.setDate(d.getDate()-((d.getDay()+6)%7));const w=dk(d);(sem[w]=sem[w]||[]).push(l)});
+ Object.values(sem).forEach(L=>{if(L.length>=5&&L.filter(l=>Math.abs(l.real-l.est)/Math.max(1,l.est)<=R25).length/L.length>=.75)t+=30});   // +30 por semana con realismo ≥75% (mín. 5 registros)
+ return t}
+const needXP=n=>75*n*(n-1);const nivel=x=>{let n=1;while(needXP(n+1)<=x)n++;return n};
+// Coach: detecta patrones con umbrales mínimos; si no hay efecto o no hay datos, NO dice nada
+function coach(){const m=[],tot=Object.keys(S.hd).reduce((a,k)=>({pl:a.pl+S.hd[k].pl,hc:a.hc+S.hd[k].hc}),{pl:0,hc:0}),gen=tot.pl?tot.hc/tot.pl:null;
+ if(gen!==null){const W={};Object.keys(S.hd).forEach(k=>{const w=new Date(k+'T12:00:00').getDay();W[w]=W[w]||{pl:0,hc:0,n:0};W[w].pl+=S.hd[k].pl;W[w].hc+=S.hd[k].hc;W[w].n++});
+  Object.keys(W).forEach(w=>{const x=W[w];if(x.n>=3&&x.hc/x.pl<=gen-.2)m.push(`Fallas los ${DN[w]}: ${Math.round(x.hc/x.pl*100)}% frente a ${Math.round(gen*100)}% en general (${x.n} días). Eso es un patrón, no mala suerte: ese día planifica menos o mueve lo esencial a la mañana.`)})}
+ const a1=adh(1,7),a0=adh(8,14);if(a1!==null&&a0!==null&&a0-a1>=.15)m.push(`Tu adherencia cayó de ${Math.round(a0*100)}% a ${Math.round(a1*100)}% en una semana. Define hoy qué se rompió.`);
+ Object.keys(S.cal).forEach(k=>{if(k.startsWith('c:'))return;const c=S.cal[k],t=S.tpl.find(x=>x.id===k);if(t&&c.n>=5&&c.ratio>=1.2)m.push(`Subestimas ${t.name}: tardas ${Math.round((c.ratio-1)*100)}% más que tu base (${c.n} registros). Deja de planificarla como si fuera ideal.`)});
+ const D={};S.logs.filter(l=>l.startTs&&l.status==='hecha'&&!l.sim).forEach(l=>(D[l.date]=D[l.date]||[]).push(l));let E=[0,0,0,0];
+ Object.keys(D).forEach(k=>{const d=S.hd[k];if(!d||!d.pl)return;const cat=l=>(S.tpl.find(x=>x.id===l.tid)||{});const key=D[k].filter(l=>cat(l).cat==='ejercicio'||(cat(l).cat==='trabajo'&&cat(l).energy>=3)).map(l=>l.startTs),sw=D[k].filter(l=>cat(l).cat==='recuperación').map(l=>l.startTs);if(!key.length||!sw.length)return;const e=Math.min(...sw)<Math.min(...key)?0:2;E[e]+=d.hc/d.pl;E[e+1]++});
+ if(E[1]>=4&&E[3]>=4){const a=E[0]/E[1],b=E[2]/E[3];if(b-a>=.15)m.push(`Los días con SW antes del ejercicio o el foco cumples ${Math.round(a*100)}% frente a ${Math.round(b*100)}% cuando lo dejas para después. Tu propia regla ya lo decía.`)}
+ return m}
+const LOGROS=()=>{const r=realismo(28),a=[1,2,3,4].every(w=>(adh((w-1)*7+1,w*7)||0)>=META_ADH);return [['7 días seguidos cumplidos',racha()>=7],['30 días seguidos cumplidos',racha()>=30],['4 semanas seguidas con adherencia ≥85%',a],['Realismo ≥80% con 20+ registros en 28 días',!!r&&r.n>=20&&r.p>=.8],['100 h de foco profundo acumuladas',foco(3650).f>=6000]]};
+function ring2(p,l){return `<div style="text-align:center">${ring(Math.max(0,Math.min(1,p||0)))}<div class="mu">${l}</div></div>`}
+function vHab(){const x=xp(),lv=nivel(x),a7=adh(1,7),re=realismo(),r=racha(),f=foco(7),cons=Math.round(100*(.5*Math.min(1,(a7||0)/META_ADH)+.3*Math.min(1,r/14)+.2*(re?re.p:0)));
+ let h=`<h2>Hábitos</h2><div class="card"><div class="row sp">${ring2(a7,'Adherencia 7 d'+(a7===null?' (sin datos)':''))}${ring2(re?re.p:0,'Realismo 28 d'+(re?'':' (faltan datos)'))}${ring2(cons/100,'Consistencia')}</div>
+ <div class="mu" style="margin-top:8px">Racha: <b>${r}</b> días cumplidos (día cumplido = ≥85% de lo planificado). Adherencia meta: 85%. Realismo = % de actividades con tiempo real a ±25% de lo estimado${re?` (n=${re.n}; tardas ${Math.round((re.sesgo-1)*100)>=0?'+':''}${Math.round((re.sesgo-1)*100)}% vs lo estimado)`:''}. Consistencia = 50% adherencia/85% + 30% racha/14 d + 20% realismo.</div></div>
+ <div class="card"><div class="lb">Nivel ${lv} · ${x} XP</div><div class="bar"><i style="width:${Math.min(100,(x-needXP(lv))/(needXP(lv+1)-needXP(lv))*100)}%"></i></div><div class="mu">Siguiente nivel: ${needXP(lv+1)} XP. XP: +10 por actividad hecha dentro de ±25% del tiempo estimado (tope 120/día) · +25 por día cumplido · +50/+100/+200 al llegar a 7/14/30 días de racha · +30 por semana con realismo ≥75%. <b>Nada</b> por crear actividades, modo mínimo ni registros "ya hechas". Desbloqueos: nivel 2 = Coach · nivel 3 = Revisión mensual.</div></div>`;
+ h+=`<div class="card"><div class="lb">Foco real · últimos 7 días</div><b>${(f.f/60).toFixed(1)} h de foco profundo</b> de ${(f.t/60).toFixed(1)} h de trabajo registrado${f.d?` · ${(f.f/60/f.d).toFixed(1)} h de foco por día trabajado`:''}.<div class="mu">Casi nadie sostiene más de 3-5 h de foco profundo al día. Las 8 h de presencia no son 8 h de foco: mide esta cifra, no la presencia.</div></div>`;
+ const pen=(S.plan[dk()]||[]).filter(i=>!i.fuera&&!logOf(i.iid));
+ h+=`<div class="card"><div class="lb">Día difícil · hábito mínimo de 2 min</div><div class="mu">Hacer una versión de 2 minutos mantiene la racha y el hábito, pero da 0 XP y no calibra. Es para no romper la cadena, no para vivir en modo mínimo.</div>${pen.slice(0,6).map(i=>`<div class="row sp" style="margin-top:6px"><span>${esc(tpl(i.tid).name||'')}</span><button class="btn sm s" data-a="hmin" data-i="${i.iid}">Versión mínima</button></div>`).join('')||'<div class="mu">No hay pendientes hoy.</div>'}</div>`;
+ h+=`<div class="card"><div class="lb">Coach</div>`+(lv<2?`<div class="mu">Se desbloquea en el nivel 2 (${needXP(2)} XP).</div>`:(()=>{const c=coach();return c.length?c.map(t=>`<div class="al">${esc(t)}</div>`).join(''):'<div class="mu">Sin patrones con datos suficientes. El coach no inventa: calla hasta que haya efecto medible.</div>'})())+`</div>`;
+ h+=`<div class="card"><div class="lb">Logros (medibles)</div>${LOGROS().map(l=>`<div class="${l[1]?'ok':'mu'}">${l[1]?'✓':'○'} ${l[0]}</div>`).join('')}</div>
+ <div class="row"><button class="btn" data-a="rev" data-i="7">Revisión semanal</button><button class="btn s" data-a="rev" data-i="30">Revisión mensual</button></div>`;
+ if(S.rev.length)h+=`<div class="card"><div class="lb">Compromisos de revisiones anteriores</div>${S.rev.slice(-3).reverse().map(r=>`<div class="mu">${r.date}: ${esc(r.txt)}</div>`).join('')}</div>`;return h}
+const ACC4={
+ hmin(i){const x=today().find(y=>y.iid===i);if(!x)return;S.logs.push({id:'l'+Date.now(),iid:i,tid:x.tid,date:dk(),real:2,est:x.est.exp,status:'hecha',min:1,nocal:1});rp();toast('Versión mínima registrada: racha protegida, 0 XP');render()},
+ rev(d){d=+d;if(d>7&&nivel(xp())<3)return toast('La revisión mensual se desbloquea en el nivel 3');const a=adh(1,d),r=realismo(d),f=foco(d),c=nivel(xp())>=2?coach():[];
+  sheet(`<h2>Revisión ${d>7?'mensual':'semanal'}</h2><p>Adherencia: <b>${a===null?'sin datos':Math.round(a*100)+'%'}</b> (meta 85%)${a!==null&&a<META_ADH?' <span class="wn">— por debajo del estándar</span>':''}<br>Realismo: <b>${r?Math.round(r.p*100)+'%':'faltan datos'}</b><br>Foco profundo: <b>${(f.f/60).toFixed(1)} h</b> de ${(f.t/60).toFixed(1)} h de trabajo<br>Racha: <b>${racha()}</b> días</p>${c.slice(0,2).map(t=>`<div class="al">${esc(t)}</div>`).join('')}<label class="lb">¿Qué ajustas concretamente la próxima ${d>7?'mes':'semana'}? (una sola cosa)<textarea id="rv_t" rows="3"></textarea></label><div class="row"><button class="btn" data-a="revok">Guardar</button><button class="btn s" data-a="close">Cerrar</button></div>`)},
+ revok(){const t=$('#rv_t').value.trim();if(!t)return toast('Escribe una acción concreta');S.rev.push({date:dk(),txt:t.slice(0,300)});S.rev=S.rev.slice(-60);save();closeS();render()}};
+
+/* ===== EVENTOS ===== */
+      const A = {
+        ...ACC,
+        ...ACC3,
+        ...ACC4,
+        tab(i) {
+          TAB = i;
+          render();
+        },
+        close: closeS,
+        why(i) {
+          const x = today().find((y) => y.iid === i);
+          sheet(
+            `<h2>¿Por qué ${x.est.exp} min?</h2><pre>${esc(why(x.est))}</pre><div class="row" style="margin-top:12px"><button class="btn" data-a="close">Cerrar</button></div>`,
+          );
+        },
+        start(i) {
+          if (S.timer) return toast("Ya hay una actividad en curso");
+          const x = today().find((y) => y.iid === i);
+          beep(0);
+          keep(1);
+          S.timer = {
+            iid: i,
+            tid: x.tid,
+            start: Date.now(),
+            paused: [],
+            pausedAt: null,
+            ii: 0,
+            extra: 0,
+            sets: 0,
+            rest: null,
+            rb: 0,
+            w80: 0,
+            w100: 0,
+            more: 0,
+            date: dk(), // día de la instancia (puede terminar después de medianoche)
+            exp: x.est.exp, // estimación congelada al iniciar
+            bp: x.est.b + x.est.p,
+            cx: x.est.ctx,
+          };
+          save();
+          render();
+        },
+        pause() {
+          S.timer.pausedAt = Date.now();
+          save();
+          render();
+        },
+        resume() {
+          const t = S.timer;
+          t.paused.push([t.pausedAt, Date.now()]);
+          t.pausedAt = null;
+          save();
+          render();
+        },
+        more() {
+          S.timer.extra += 5;
+          S.timer.more = 1;
+          S.timer.w100 = 0;
+          save();
+          toast('+5 min. Se registra como "necesité más tiempo"');
+          render();
+        },
+        set() {
+          const t = S.timer,
+            it = tpl(t.tid).items[t.ii];
+          if (it.k === "series" && ++t.sets < it.sets) {
+            t.rest = Date.now();
+            t.rb = 0;
+          } else {
+            t.ii++;
+            t.sets = 0;
+            t.rest = null;
+          }
+          save();
+          render();
+        },
+        cancel() {
+          ask("¿Cancelar sin registrar?", () => {
+            keep(0);
+            S.timer = null;
+            save();
+            render();
+          });
+        },
+        finish() {
+          const t = S.timer;
+          if (t.pausedAt) A.resume();
+          t.endAt = Date.now();
+          const r = Math.max(1, Math.round(elapsed(S.timer) / 60));
+          sheet(`<h2>Registro</h2><label class="lb">Duración real (min)<input type="number" id="r_real" value="${r}" min="1"></label>
+  <label class="lb">Dificultad percibida (1-5)<input type="number" id="r_d" value="3" min="1" max="5"></label>
+  <label class="lb">Energía ahora (1-5, obligatoria)<select id="r_e"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></label>
+  <label class="lb">Ánimo (opcional)<select id="r_m"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></label>
+  <div class="row"><button class="btn" data-a="done">Guardar</button><button class="btn s" data-a="close">Volver</button></div>`);
+        },
+        done() {
+          const t = S.timer,
+            x = today().find((y) => y.iid === t.iid),
+            e0 = x ? x.est : t.exp ? { exp: t.exp, b: t.bp || 0, p: 0, ctx: t.cx || 1 } : null,
+            real = Math.max(1, +$("#r_real").value || 1);
+          addLog({
+            id: "l" + Date.now(),
+            iid: t.iid,
+            tid: t.tid,
+            date: t.date || dk(),
+            startTs: t.start,
+            endTs: t.endAt || Date.now(),
+            real,
+            est: e0 ? e0.exp : real,
+            bp: e0 ? e0.b + e0.p : 0,
+            cx: e0 ? e0.ctx : 1,
+            diff: Math.min(5, Math.max(1, +$("#r_d").value || 3)),
+            energy: +$("#r_e").value || null,
+            mood: +$("#r_m").value || null,
+            status: "hecha",
+            more: t.more,
+          });
+          keep(0);
+          S.en.push({
+            ts: Date.now(),
+            v: Math.min(5, Math.max(1, +$("#r_e").value || 3)),
+          });
+          S.timer = null;
+          save();
+          closeS();
+          toast(`Estimaste ${e0 ? e0.exp : "?"} min, real ${real} min`);
+          render();
+        },
+        skip(i) {
+          const x = today().find((y) => y.iid === i);
+          S.logs.push({
+            id: "l" + Date.now(),
+            iid: i,
+            tid: x.tid,
+            date: dk(),
+            real: 0,
+            est: x.est.exp,
+            status: "omitida",
+          });
+          rp();
+          render();
+        },
+        replan() {
+          if (S.timer) return toast("Termina la actividad en curso primero");
+          if (S.rm) delete S.rm[dk()];
+          if (S.ext) delete S.ext[dk()];
+          genPlan(dk());
+          render();
+        },
+        new() {
+          formTpl();
+        },
+        en(v) {
+          S.en.push({ ts: Date.now(), v: +v });
+          S.en = S.en.slice(-400);
+          save();
+          toast(
+            +v <= 2
+              ? "Energía baja registrada: sigue el protocolo"
+              : "Energía registrada",
+          );
+          render();
+        },
+        vdone() {
+          venc().forEach((i) =>
+            S.logs.push({
+              id: "l" + Date.now() + i.iid,
+              iid: i.iid,
+              tid: i.tid,
+              date: dk(),
+              real: i.est.exp,
+              est: i.est.exp,
+              status: "hecha",
+              nocal: 1,
+            }),
+          );
+          rp();
+          render();
+        }, // cuenta como hecha, NO calibra
+        vskip() {
+          venc().forEach((i) =>
+            S.logs.push({
+              id: "l" + Date.now() + i.iid,
+              iid: i.iid,
+              tid: i.tid,
+              date: dk(),
+              real: 0,
+              est: i.est.exp,
+              status: "omitida",
+            }),
+          );
+          rp();
+          render();
+        },
+        yes() {
+          const f = YES;
+          YES = null;
+          closeS();
+          if (f) f();
+        },
+        ext() {
+          (S.ext = S.ext || {})[dk()] = 1;
+          rp();
+          render();
+        },
+        pnew() {
+          sheet(
+            `<h2>Pendiente</h2><label class="lb">Nombre<input id="p_n"></label><label class="lb">Duración (min)<input type="number" id="p_d" value="30" min="5"></label><div class="row"><button class="btn" data-a="pok">Guardar</button><button class="btn s" data-a="close">Cerrar</button></div>`,
+          );
+        },
+        pok() {
+          const n = $("#p_n").value.trim(),
+            d = +$("#p_d").value;
+          if (!n || !(d >= 5)) return toast("Falta nombre o duración");
+          S.pend.push({ id: "p" + Date.now(), name: n, min: d });
+          save();
+          closeS();
+          render();
+        },
+        pdel(i) {
+          S.pend = S.pend.filter((p) => p.id !== i);
+          save();
+          render();
+        },
+        padd(i) {
+          const p = S.pend.find((x) => x.id === i);
+          if (!p) return;
+          const k = dk();
+          (S.extra = S.extra || {})[k] = (S.extra[k] || []).concat({
+            id: "x" + Date.now(),
+            name: p.name,
+            cat: "pendiente",
+            base: p.min,
+            prep: 0,
+            trans: 0,
+            rest: 0,
+            energy: 2,
+            type: "normal",
+            prio: 2,
+            freq: "diaria",
+            win: "",
+          });
+          S.pend = S.pend.filter((x) => x.id !== i);
+          genPlan(k);
+          toast("Pendiente colocado en tu día");
+          render();
+        },
+        copy() {
+          const x = $("#bk");
+          x.select();
+          try {
+            navigator.clipboard.writeText(x.value).then(
+              () => toast("Copiado"),
+              () => {
+                document.execCommand("copy");
+                toast("Copiado");
+              },
+            );
+          } catch (e) {
+            document.execCommand("copy");
+            toast("Copiado");
+          }
+        },
+        impt() {
+          sheet(
+            `<h2>Importar por texto</h2><textarea id="ip" rows="8" placeholder="Pega aquí el JSON"></textarea><div class="row"><button class="btn" data-a="ipok">Importar</button><button class="btn s" data-a="close">Cerrar</button></div>`,
+          );
+        },
+        ipok() {
+          const v = $("#ip").value;
+          closeS();
+          importTxt(v);
+        },
+        rescue() {
+          ask(
+            "Se guardará copia en _rescate y se cargará el ejemplo. ¿Seguir?",
+            () => {
+              try {
+                localStorage.setItem(KEY + "_rescate", JSON.stringify(S));
+              } catch (_) {}
+              S = seed();
+              save();
+              render();
+            },
+          );
+        },
+        clrsim() {
+          S.logs = S.logs.filter((l) => !l.sim);
+          rebuildCal();
+          rp();
+          toast("Simulados borrados");
+          render();
+        },
+        rm(i) {
+          const m = i.split("@"),
+            k = dk();
+          (S.rm = S.rm || {})[k] = (S.rm[k] || []).concat(
+            m[0] + "#" + m[1].split("#")[1],
+          );
+          genPlan(k);
+          toast("Quitada de hoy: el día se reajusta");
+          render();
+        },
+        comp() {
+          sheet(
+            `<h2>Compromiso de hoy</h2><p class="mu">Reserva su tiempo y el resto del día se reajusta solo: recorta lo prescindible y lo devuelve cuando lo quitas.</p><label class="lb">Nombre<input id="c_n"></label><div class="g2"><label class="lb">Duración (min)<input type="number" id="c_d" value="60" min="5"></label><label class="lb">Hora (opcional)<input type="time" id="c_t"></label></div><div class="row"><button class="btn" data-a="compok">Añadir</button><button class="btn s" data-a="close">Cerrar</button></div>`,
+          );
+        },
+        compok() {
+          const n = $("#c_n").value.trim(),
+            d = +$("#c_d").value;
+          if (!n || !(d >= 5)) return toast("Falta nombre o duración");
+          const k = dk();
+          (S.extra = S.extra || {})[k] = (S.extra[k] || []).concat({
+            id: "x" + Date.now(),
+            name: n,
+            cat: "compromiso",
+            base: d,
+            prep: 0,
+            trans: 0,
+            energy: 2,
+            type: "normal",
+            prio: 1,
+            freq: "diaria",
+            win: $("#c_t").value,
+          });
+          genPlan(k);
+          closeS();
+          toast("Día reajustado");
+          render();
+        },
+        addp(i) {
+          const k = dk();
+          S.add = S.add || {};
+          (S.add[k] = S.add[k] || []).push({
+            tid: i,
+            k: "d" + (Date.now() % 1e6),
+          });
+          genPlan(k);
+          TAB = "hoy";
+          render();
+          toast("Añadido: el día se reajusta");
+        },
+        edit(i) {
+          formTpl(tpl(i));
+        },
+        save() {
+          const g = (k) => $("#f_" + k).value,
+            id = g("id"),
+            name = g("name").trim();
+          if (!name) return toast("Falta el nombre");
+          if (
+            !g("win")
+              .split(",")
+              .filter(Boolean)
+              .every((x) => /^\s*([01]?\d|2[0-3]):[0-5]\d\s*$/.test(x))
+          )
+            return toast("Horas inválidas");
+          if (g("type") === "rutina" && !parseItems(g("items")).length)
+            return toast("Agrega al menos un componente");
+          const o = {
+            id,
+            name,
+            cat: g("cat"),
+            type: g("type"),
+            base: Math.max(1, +g("base") || 1),
+            prep: Math.max(0, +g("prep") || 0),
+            trans: Math.max(0, +g("trans") || 0),
+            energy: Math.min(3, Math.max(1, +g("energy") || 2)),
+            prio: Math.min(3, Math.max(1, +g("prio") || 2)),
+            rest: Math.max(0, +g("rest") || 0),
+            freq: g("freq"),
+            days: [...new Set(g("days").toUpperCase().replace(/[^LMXJVSD]/g, "").split("").map((c) => "DLMXJVS".indexOf(c)))],
+            win: g("win").replace(/\s/g, ""),
+            items: parseItems(g("items")),
+          };
+          const prev = S.tpl.find((t) => t.id === id);
+          if (prev && prev.winD) o.winD = prev.winD; // conserva la ventana por día
+          const k = S.tpl.findIndex((t) => t.id === id);
+          k < 0 ? S.tpl.push(o) : (S.tpl[k] = o);
+          rp();
+          closeS();
+          toast("Guardado");
+          render();
+        },
+        del(i) {
+          if (S.timer && S.timer.tid === i) return toast("Está en curso");
+          ask("¿Eliminar actividad?", () => {
+            S.tpl = S.tpl.filter((t) => t.id !== i);
+            rp();
+            render();
+          });
+        },
+        cfg() {
+          const w = $("#cw").value,
+            s = $("#cs").value,
+            h = $("#ch").value;
+          if (!w || !s || !h) return toast("Horario inválido");
+          S.cfg.wake = w;
+          S.cfg.sleep = s;
+          S.cfg.hard = h;
+          if (HD() < SL()) S.cfg.hard = s;
+          rp();
+          toast("Horario guardado");
+          render();
+        },
+        theme(i) {
+          S.cfg.theme = i === "auto" ? null : i;
+          applyTheme();
+          save();
+        },
+        exp() {
+          const j = JSON.stringify(S, null, 1);
+          try {
+            const b = new Blob([j], { type: "application/json" }),
+              a = document.createElement("a");
+            a.href = URL.createObjectURL(b);
+            a.download = "planifica-respaldo-" + dk() + ".json";
+            a.click();
+          } catch (e) {}
+          S.cfg.lastBackup = Date.now();
+          save();
+          sheet(
+            `<h2>Respaldo</h2><p class="mu">Si la descarga no empezó, copia este texto y guárdalo en una nota o archivo.</p><textarea id="bk" rows="8" readonly>${esc(j)}</textarea><div class="row"><button class="btn" data-a="copy">Copiar</button><button class="btn s" data-a="close">Cerrar</button></div>`,
+          );
+        },
+        imp() {
+          $("#imp").click();
+        },
+        sim() {
+          // Historial simulado determinista (generador congruencial)
+          S.logs = S.logs.filter((l) => !l.sim);
+          rebuildCal();
+          let sd = 7;
+          const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
+          S.tpl.forEach((t) => {
+            const hid = {
+              desplazamiento: [1.5, 0.35],
+              recuperación: [1.6, 0.4],
+              idiomas: [1.2, 0.15],
+              ejercicio: [1.15, 0.1],
+            }[t.cat] || [1.25, 0.15];
+            for (let d = 12; d >= 1; d--) {
+              const real = Math.max(
+                1,
+                Math.round(
+                  (baseOf(t) + +t.prep) *
+                    hid[0] *
+                    (1 + (rnd() - 0.5) * 2 * hid[1]),
+                ),
+              );
+              const dt = new Date();
+              dt.setDate(dt.getDate() - d);
+              const e = estimate(t, 12);
+              addLog({
+                id: "s" + t.id + d,
+                iid: "sim",
+                tid: t.id,
+                date: dk(dt),
+                real,
+                est: e.exp,
+                diff: 3,
+                energy: 3,
+                mood: 3,
+                status: "hecha",
+                sim: true,
+              });
+            }
+          });
+          rp();
+          toast("Historial simulado. Mira cómo cambian rangos y confianza");
+          render();
+        },
+        clr() {
+          ask(
+            "¿Borrar TODO el historial (incluye lo real) y la calibración?",
+            () => {
+              S.logs = [];
+              S.cal = {};
+              rp();
+              render();
+            },
+          );
+        },
+      };
+      document.addEventListener("click", (e) => {
+        const b = e.target.closest("[data-a]");
+        if (b && A[b.dataset.a]) A[b.dataset.a](b.dataset.i);
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeS();
+        // Trampa de foco: con la hoja abierta, Tab/Shift+Tab no salen de ella
+        if (e.key === "Tab" && !$("#ov").hidden) {
+          const f = [...$("#sh").querySelectorAll("button,input,select,textarea,[href]")].filter((x) => !x.disabled);
+          if (!f.length) return e.preventDefault();
+          const a = document.activeElement, i = f.indexOf(a);
+          if (e.shiftKey && (i <= 0)) { e.preventDefault(); f[f.length - 1].focus(); }
+          else if (!e.shiftKey && (i === f.length - 1 || i === -1)) { e.preventDefault(); f[0].focus(); }
+        }
+      }); // Esc cierra la hoja inferior
+      $("#imp").addEventListener("change", (e) => {
+        const f = e.target.files[0];
+        if (!f) return;
+        const r = new FileReader();
+        r.onload = () => importTxt(r.result);
+        r.readAsText(f);
+        e.target.value = "";
+      });
+      /* ===== INSTALACIÓN (PWA) y almacenamiento protegido — Fase 5b ===== */
+      let DEFER = null, PERSIST = null;
+      const enApp = () => (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
+      function pstTxt() {
+        const a = enApp() ? "Abierta como app instalada. " : "";
+        if (PERSIST === true) return a + "Almacenamiento protegido: el navegador no debería borrar tus datos por falta de espacio.";
+        if (PERSIST === false) return a + "Almacenamiento NO protegido: el navegador podría borrar tus datos si falta espacio. Exporta tu respaldo cada semana.";
+        return a;
+      }
+      window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); DEFER = e; if (TAB === "aju") render(); });
+      window.addEventListener("appinstalled", () => { DEFER = null; toast("PLANIFICA instalada"); if (TAB === "aju") render(); });
+      A.inst = () => { if (!DEFER) return; DEFER.prompt(); DEFER = null; render(); };
+      if (navigator.storage && navigator.storage.persist)
+        navigator.storage.persist().then((v) => { PERSIST = v; const e = $("#pst"); if (e) e.textContent = pstTxt(); }).catch(() => {});
+      // Service worker: solo con http(s) (no con file://); no afecta a tus datos
+      if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol))
+        navigator.serviceWorker.register("sw.js").catch(() => {});
+      function applyTheme() {
+        const r = document.documentElement;
+        S.cfg.theme
+          ? r.setAttribute("data-theme", S.cfg.theme)
+          : r.removeAttribute("data-theme");
+      }
+
+      /* ===== ARRANQUE ===== */
+      $("#ov").addEventListener("click", (e) => {
+        if (e.target.id === "ov") closeS();
+      });
+      load();
+      applyTheme();
+      render();
+    </script>
+  </body>
+</html>
